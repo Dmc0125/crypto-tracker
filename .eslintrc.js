@@ -18,6 +18,8 @@ module.exports = {
     'import/prefer-default-export': 0,
     'no-underscore-dangle': 0,
     'no-param-reassign': 0,
+    'max-len': ['error', { code: 150 }],
+    'no-plusplus': 0,
     '@typescript-eslint/camelcase': 0,
     '@typescript-eslint/no-use-before-define': 0,
   },

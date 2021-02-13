@@ -1,5 +1,5 @@
 <template>
-  <section></section>
+  <section class="add-position"></section>
 </template>
 
 <script lang="ts">
@@ -13,5 +13,13 @@ export default defineComponent({
 </script>
 
 <style lang="scss" scoped>
+.add-position {
+  width: 25%;
+  height: 100%;
+  position: fixed;
+  top: 0;
+  right: 0;
 
+  background: var(--secondary);
+}
 </style>

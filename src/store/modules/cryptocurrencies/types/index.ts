@@ -36,6 +36,8 @@ export type State = {
 
 export type Getters = {
   [GetterTypes.GetCryptocurrencies]: (state: State) => CryptocurrencyData[];
+  [GetterTypes.GetCryptocurrenciesBySymbol]: (state: State) => (symbols: string[]) => CryptocurrencyData[];
+  [GetterTypes.GetSortedCurrencies]: (state: State) => CryptocurrencyData[];
 }
 
 // ACTIONS

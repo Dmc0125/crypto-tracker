@@ -19,6 +19,18 @@ const state: State = {
 
 const getters: GetterTree<State, RootState> & Getters = {
   getCryptocurrencies: _state => _state.cryptocurrencies,
+  getCryptocurrenciesBySymbol: _state => symbols => {
+    if (!_state.cryptocurrencies.length) {
+      return [];
+    }
+
+    return symbols.map(_symbol => (
+      (_state.cryptocurrencies.find(({ symbol }) => symbol === _symbol) as CryptocurrencyData)
+    ));
+  },
+  getSortedCurrencies: _state => _state.cryptocurrencies
+    .filter(({ usdData }) => usdData)
+    .sort(({ usdData: aUsdData }, { usdData: bUsdData }) => Number(bUsdData?.priceChangePercent) - Number(aUsdData?.priceChangePercent)),
 };
 
 const actions: ActionTree<State, RootState> & Actions = {
@@ -61,7 +73,7 @@ export default store;
 function createCryptocurrencyData(binanceResponse: BinanceResponse[]) {
   const btcAndUsdPairsSymbols = getBtcAndUsdPairsSymbol(binanceResponse);
 
-  console.log(btcAndUsdPairsSymbols);
+  // console.log(btcAndUsdPairsSymbols);
 
   const cryptocurrencyData = setCryptocurrencyData(binanceResponse, btcAndUsdPairsSymbols);
 
@@ -72,10 +84,11 @@ function getBtcAndUsdPairsSymbol(binanceResponse: BinanceResponse[]) {
   const btcAndUsdPairsSymbols = new Set(binanceResponse.reduce((acc, { symbol }) => {
     if (symbol.endsWith('BTC') || symbol.endsWith('USD')) {
       const _symbol = symbol.slice(0, -3);
+
       return [...acc, _symbol];
     }
 
-    if (symbol.endsWith('USD')) {
+    if (symbol.endsWith('USDT')) {
       const _symbol = symbol.slice(0, -4);
       return [...acc, _symbol];
     }
@@ -96,7 +109,7 @@ function setCryptocurrencyData(
     const _cryptocurrencyData: CryptocurrencyData = {
       symbol,
       id: uuidv4(),
-      logo: `https://cryptoicons.org/api/icon/${symbol.toLowerCase()}/32`,
+      logo: `https://icons.bitbot.tools/api/${symbol.toLowerCase()}/32x32`,
       btcData: null,
       usdData: null,
     };
