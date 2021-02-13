@@ -2,16 +2,14 @@
 import {
   GetterTree, ActionTree, MutationTree, Module,
 } from 'vuex';
-import { v4 as uuidv4 } from 'uuid';
 
+import { API_URL } from '@/constants';
 import { RootState } from '@/store/types';
 import {
-  State, Getters, Actions, Mutations, BinanceResponse, CryptocurrencyData,
+  State, Getters, Actions, Mutations, CoingeckoResponse, CryptocurrencyData,
 } from './types';
 import { ActionTypes } from './types/action-types';
 import { MutationTypes } from './types/mutation-types';
-
-const API_URL = 'https://api.binance.com/api/v3/ticker/24hr';
 
 const state: State = {
   cryptocurrencies: [],
@@ -25,33 +23,52 @@ const getters: GetterTree<State, RootState> & Getters = {
     }
 
     return symbols.map(_symbol => (
-      (_state.cryptocurrencies.find(({ symbol }) => symbol === _symbol) as CryptocurrencyData)
+      (_state.cryptocurrencies.find(({ symbol }) => symbol === _symbol.toLowerCase()) as CryptocurrencyData)
     ));
   },
   getSortedCurrencies: _state => _state.cryptocurrencies
-    .filter(({ usdData }) => usdData)
-    .sort(({ usdData: aUsdData }, { usdData: bUsdData }) => Number(bUsdData?.priceChangePercent) - Number(aUsdData?.priceChangePercent)),
+    .sort(({ usdMarketData: aUsdData }, { usdMarketData: bUsdData }) => bUsdData.priceChangePercentage24h - aUsdData.priceChangePercentage24h),
 };
 
 const actions: ActionTree<State, RootState> & Actions = {
-  [ActionTypes.GetBinanceData]: async ({ commit }) => {
-    const json = await fetch(API_URL);
-    const binanceResponse: BinanceResponse[] = await json.json();
+  [ActionTypes.GetCoingeckoData]: async ({ commit }) => {
+    const usdJson = await fetch(`${API_URL}coins/markets?vs_currency=usd&order=market_cap_desc&per_page=100&page=1&sparkline=false`);
+    const usdCoingeckoResponse: CoingeckoResponse[] = await usdJson.json();
 
-    const cryptocurrencyData = createCryptocurrencyData(binanceResponse);
+    const btcJson = await fetch(`${API_URL}coins/markets?vs_currency=btc&order=market_cap_desc&per_page=100&page=1&sparkline=false`);
+    const btcCoingeckoResponse: CoingeckoResponse[] = await btcJson.json();
+
+    const cryptocurrencyData = usdCoingeckoResponse.map<CryptocurrencyData>(({
+      current_price, price_change_24h, price_change_percentage_24h, market_cap, total_volume, ...rest
+    }, i) => {
+      const {
+        current_price: btcCurrentPrice,
+        price_change_24h: btcPriceChange24h,
+        price_change_percentage_24h: btcPriceChangePercentage24h,
+        market_cap: btcMarketCap,
+        total_volume: btcTotalVolume,
+      } = btcCoingeckoResponse[i];
+
+      return {
+        ...rest,
+        usdMarketData: {
+          price: current_price,
+          priceChange24h: price_change_24h,
+          priceChangePercentage24h: price_change_percentage_24h,
+          marketCap: market_cap,
+          totalVolume: total_volume,
+        },
+        btcMarketData: {
+          price: btcCurrentPrice,
+          priceChange24h: btcPriceChange24h,
+          priceChangePercentage24h: btcPriceChangePercentage24h,
+          marketCap: btcMarketCap,
+          totalVolume: btcTotalVolume,
+        },
+      };
+    });
 
     commit(MutationTypes.SET_CRYPTOCURRENCIES, cryptocurrencyData);
-  },
-  [ActionTypes.ConnectWebsocket]: ({ commit }) => {
-    const bnbWebsocket = new WebSocket('wss://stream.binance.com:9443/ws/!ticker@arr');
-
-    bnbWebsocket.onopen = () => {
-      console.log('Connected to websocket');
-    };
-
-    bnbWebsocket.onmessage = (e) => {
-      // console.log(e.data);
-    };
   },
 };
 
@@ -69,69 +86,3 @@ const store: Module<State, RootState> = {
 };
 
 export default store;
-
-function createCryptocurrencyData(binanceResponse: BinanceResponse[]) {
-  const btcAndUsdPairsSymbols = getBtcAndUsdPairsSymbol(binanceResponse);
-
-  // console.log(btcAndUsdPairsSymbols);
-
-  const cryptocurrencyData = setCryptocurrencyData(binanceResponse, btcAndUsdPairsSymbols);
-
-  return cryptocurrencyData;
-}
-
-function getBtcAndUsdPairsSymbol(binanceResponse: BinanceResponse[]) {
-  const btcAndUsdPairsSymbols = new Set(binanceResponse.reduce((acc, { symbol }) => {
-    if (symbol.endsWith('BTC') || symbol.endsWith('USD')) {
-      const _symbol = symbol.slice(0, -3);
-
-      return [...acc, _symbol];
-    }
-
-    if (symbol.endsWith('USDT')) {
-      const _symbol = symbol.slice(0, -4);
-      return [...acc, _symbol];
-    }
-
-    return acc;
-  }, [] as string[]));
-
-  return btcAndUsdPairsSymbols;
-}
-
-function setCryptocurrencyData(
-  binanceResponse: BinanceResponse[], btcAndUsdPairsSymbols: Set<string>,
-) {
-  const cryptocurrencyData = [...btcAndUsdPairsSymbols].map(symbol => {
-    const btcPairData = binanceResponse.find(({ symbol: _symbol }) => _symbol === `${symbol}BTC`);
-    const usdPairData = binanceResponse.find(({ symbol: _symbol }) => _symbol === `${symbol}USD` || _symbol === `${symbol}USDT`);
-
-    const _cryptocurrencyData: CryptocurrencyData = {
-      symbol,
-      id: uuidv4(),
-      logo: `https://icons.bitbot.tools/api/${symbol.toLowerCase()}/32x32`,
-      btcData: null,
-      usdData: null,
-    };
-
-    if (btcPairData) {
-      _cryptocurrencyData.btcData = {
-        marketPair: `${symbol}BTC`,
-        price: btcPairData.lastPrice,
-        priceChangePercent: btcPairData.priceChangePercent,
-      };
-    }
-
-    if (usdPairData) {
-      _cryptocurrencyData.usdData = {
-        marketPair: `${symbol}USD`,
-        price: usdPairData.lastPrice,
-        priceChangePercent: usdPairData.priceChangePercent,
-      };
-    }
-
-    return _cryptocurrencyData;
-  });
-
-  return cryptocurrencyData;
-}

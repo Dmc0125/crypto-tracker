@@ -1,7 +1,7 @@
 <template>
   <main
     class="app"
-    color-mode="light"
+    color-mode="dark"
   >
     <section class="main-section">
       <main-card />
@@ -30,9 +30,7 @@ export default defineComponent({
     const { dispatch } = useStore();
 
     onMounted(() => {
-      dispatch(ActionTypes.GetBinanceData);
-
-      // dispatch(ActionTypes.ConnectWebsocket);
+      dispatch(ActionTypes.GetCoingeckoData);
     });
 
     return {};

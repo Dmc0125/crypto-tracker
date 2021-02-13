@@ -4,10 +4,10 @@
   >
     <img
       class="cryptocurrency__logo"
-      :src="cryptocurrencyData.logo"
+      :src="cryptocurrencyData.image"
       :alt="cryptocurrencyData.symbol"
     />
-    <h4 class="cryptocurrency__symbol">{{ cryptocurrencyData.symbol }}</h4>
+    <h4 class="cryptocurrency__symbol">{{ cryptocurrencyData.symbol.toUpperCase() }}</h4>
 
     <p class="cryptocurrency__usd-price">${{ usdPrice }}</p>
     <p class="cryptocurrency__btc-price">BTC {{ btcPrice }}</p>
@@ -20,7 +20,7 @@
 <script lang="ts">
 /* eslint-disable no-confusing-arrow */
 import {
-  computed, defineComponent, PropType,
+  defineComponent, PropType, computed,
 } from 'vue';
 
 import { CryptocurrencyData } from '@/store/modules/cryptocurrencies/types';
@@ -33,20 +33,20 @@ export default defineComponent({
     },
   },
   setup(props) {
-    const usdData = computed(() => props.cryptocurrencyData.usdData);
-    const btcData = computed(() => props.cryptocurrencyData.btcData);
+    const usdMarketData = computed(() => props.cryptocurrencyData.usdMarketData);
+    const btcMarketData = computed(() => props.cryptocurrencyData.btcMarketData);
 
-    const usdPrice = computed(() => Number(usdData.value?.price || 0).toFixed(2));
-    const btcPrice = computed(() => Number(btcData.value?.price || 1).toFixed(8));
+    const usdPrice = computed(() => usdMarketData.value.price.toFixed(2));
+    const usdPercentChange = computed(() => usdMarketData.value.priceChangePercentage24h.toFixed(2));
 
-    const usdPercentChange = computed(() => Number(usdData.value?.priceChangePercent || 0).toFixed(2));
-    const btcPercentChange = computed(() => Number(btcData.value?.priceChangePercent || 0).toFixed(2));
+    const btcPrice = computed(() => btcMarketData.value.price.toFixed(8));
+    const btcPercentChange = computed(() => btcMarketData.value.priceChangePercentage24h.toFixed(2));
 
     return {
       usdPrice,
-      btcPrice,
-
       usdPercentChange,
+
+      btcPrice,
       btcPercentChange,
     };
   },
@@ -65,12 +65,12 @@ export default defineComponent({
 }
 
 .cryptocurrency__logo {
+  height: 2rem;
   grid-column: 1 / 3;
   justify-self: end;
   margin-right: .5rem;
 
   border-radius: 50%;
-  box-shadow: 0 0 12px rgba(0, 0, 0, .15);
 }
 
 .cryptocurrency__symbol {

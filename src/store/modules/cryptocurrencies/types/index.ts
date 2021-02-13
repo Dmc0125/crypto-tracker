@@ -8,24 +8,32 @@ import { MutationTypes } from './mutation-types';
 
 // STATE
 
-export type BinanceResponse = {
-  symbol: string;
-  lastPrice: string;
-  priceChangePercent: string;
+export type MarketData = {
+  price: number;
+  marketCap: number;
+  totalVolume: number;
+  priceChange24h: number;
+  priceChangePercentage24h: number;
 }
 
-export type PairMarketData = {
-  marketPair: string;
-  price: string;
-  priceChangePercent: string;
-}
-
-export type CryptocurrencyData = {
+export type CoingeckoResponse = {
   id: string;
   symbol: string;
-  logo: string;
-  btcData: PairMarketData | null;
-  usdData: PairMarketData | null;
+  name: string;
+  image: string;
+  current_price: number;
+  market_cap: number;
+  total_volume: number;
+  price_change_24h: number;
+  price_change_percentage_24h: number;
+}
+
+export type CryptocurrencyData = Omit<
+  CoingeckoResponse,
+  'current_price' | 'market_cap' | 'total_volume' | 'price_change_24h' | 'price_change_percentage_24h'
+> & {
+  usdMarketData: MarketData;
+  btcMarketData: MarketData;
 }
 
 export type State = {
@@ -50,8 +58,7 @@ type ActionAugments = Omit<ActionContext<State, {}>, 'commit'> & {
 }
 
 export type Actions = {
-  [ActionTypes.GetBinanceData]: (context: ActionAugments) => void;
-  [ActionTypes.ConnectWebsocket]: (context: ActionAugments) => void;
+  [ActionTypes.GetCoingeckoData]: (context: ActionAugments) => void;
 }
 
 // MUTATIONS

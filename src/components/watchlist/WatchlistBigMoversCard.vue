@@ -1,19 +1,19 @@
 <template>
   <div class="big-movers-card">
     <div class="card__logo">
-      <img :src="cryptocurrencyData.logo" :alt="`${cryptocurrencyData.symbol}`">
+      <img :src="cryptocurrencyData.image" :alt="`${cryptocurrencyData.symbol}`">
     </div>
 
-    <h4 class="card__symbol">{{ cryptocurrencyData.symbol }}</h4>
+    <h4 class="card__symbol">{{ cryptocurrencyData.symbol.toUpperCase() }}</h4>
 
     <div class="card__price-data">
       <h5 class="price-data__heading">Price</h5>
-      <p class="price-data__price">${{ Number(cryptocurrencyData.usdData?.price).toFixed(2) }}</p>
+      <p class="price-data__price">${{ Number(cryptocurrencyData.usdMarketData.price).toFixed(2) }}</p>
     </div>
 
     <div class="card__percent-data">
       <h5 class="percent-data__heading">Price change</h5>
-      <p class="percent-data__change">{{ Number(cryptocurrencyData.usdData?.priceChangePercent).toFixed(2) }}%</p>
+      <p class="percent-data__change">{{ Number(cryptocurrencyData.usdMarketData.priceChangePercentage24h).toFixed(2) }}%</p>
     </div>
   </div>
 </template>
@@ -49,11 +49,17 @@ export default defineComponent({
 
   border: 1px solid var(--primary);
   border-radius: 5px;
+  box-shadow: 0 0 16px rgba(0, 0, 0, .05);
 }
 
 .card__logo {
   grid-column: 1 / 2;
   grid-row: 1 / 2;
+
+  img {
+    height: 2rem;
+    border-radius: 50%;
+  }
 }
 
 .card__symbol {

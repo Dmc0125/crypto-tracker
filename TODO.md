@@ -1,6 +1,7 @@
 # MVP
 
-- [ ] Show BTC, ETH, LTC, DOT, LINK, FTT, BNB data
+- [X] Show BTC, ETH, LTC, DOT, LINK, FTT, BNB data
+- Create favorite watchlist
 
 - [ ] Enter and close positions
 - [ ] Delete positions
@@ -12,30 +13,37 @@
 
 - Option to switch to dark mode based on time
 
-### Binance response:
+- Component for coloring percent changes
+
+### Coingecko response:
 
 ```js
 {
-  askPrice: '0.03821700',
-  askQty: '0.18600000',
-  bidPrice: '0.03821300',
-  bidQty: '3.00000000',
-  closeTime: 1612961777499,
-  count: 544868,
-  firstId: 228989031,
-  highPrice: '0.03980000',
-  lastId: 229533898,
-  lastPrice: '0.03821700',
-  lastQty: '0.73200000',
-  lowPrice: '0.03694200',
-  openPrice: '0.03813100',
-  openTime: 1612875377499,
-  prevClosePrice: '0.03813100',
-  priceChange: '0.00008600',
-  priceChangePercent: '0.226',
-  quoteVolume: '18728.91887634',
-  symbol: 'ETHBTC',
-  volume: '489689.51900000',
-  weightedAvgPrice: '0.03824652',
+  "id": "bitcoin",
+  "symbol": "btc",
+  "name": "Bitcoin",
+  "image": "https://assets.coingecko.com/coins/images/1/large/bitcoin.png?1547033579",
+  "current_price": 46850,
+  "market_cap": 874448020680,
+  "market_cap_rank": 1,
+  "fully_diluted_valuation": 985807301440,
+  "total_volume": 56130859770,
+  "high_24h": 48010,
+  "low_24h": 46297,
+  "price_change_24h": -821.37401478,
+  "price_change_percentage_24h": -1.72299,
+  "market_cap_change_24h": -11357388297.940796,
+  "market_cap_change_percentage_24h": -1.28215,
+  "circulating_supply": 18627787,
+  "total_supply": 21000000,
+  "max_supply": 21000000,
+  "ath": 48687,
+  "ath_change_percentage": -3.58232,
+  "ath_date": "2021-02-12T00:23:27.963Z",
+  "atl": 67.81,
+  "atl_change_percentage": 69128.5756,
+  "atl_date": "2013-07-06T00:00:00.000Z",
+  "roi": null,
+  "last_updated": "2021-02-13T17:42:42.728Z"
 }
 ```

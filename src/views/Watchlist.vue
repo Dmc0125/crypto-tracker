@@ -42,7 +42,9 @@
 </template>
 
 <script lang="ts">
-import { computed, defineComponent } from 'vue';
+import {
+  computed, defineComponent,
+} from 'vue';
 
 import { useStore } from '@/store';
 
@@ -59,9 +61,9 @@ export default defineComponent({
   setup() {
     const { getters } = useStore();
 
-    const watchlistCryptocurrencies = computed(() => getters.getCryptocurrenciesBySymbol(['BTC', 'ETH', 'LTC', 'DOT', 'LINK', 'FTT', 'BNB']));
     const sortedCurrencies = computed(() => getters.getSortedCurrencies);
     const biggestMovers = computed(() => sortedCurrencies.value.slice(0, 2).concat(sortedCurrencies.value.slice(-2)));
+    const watchlistCryptocurrencies = computed(() => getters.getCryptocurrenciesBySymbol(['BTC', 'ETH', 'LTC', 'DOT', 'LINK', 'FTT', 'BNB']));
 
     return {
       watchlistCryptocurrencies,
