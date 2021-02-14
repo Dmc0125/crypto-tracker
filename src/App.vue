@@ -130,7 +130,7 @@ p, a {
 .app[color-mode="dark"] {
   --primary: #1f242a;
   --secondary: #30353b;
-  --third: rgb(197, 197, 197);
+  --third: #1d2227;
 
   --font-primary: rgb(223, 223, 223);
   --font-secondary: rgb(24, 24, 24);

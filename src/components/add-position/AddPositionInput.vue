@@ -1,17 +1,27 @@
 <template>
-  <div class="add-position-input">
+  <div
+    class="add-position-input"
+    :class="{ mt: !mt0, 'add-position-input--error': errorMessage.length }"
+  >
     <div
       class="add-position-input__label-wrapper"
-      :class="{ 'add-position-input__label-wrapper--active': inputValue.length }"
+      :class="{ 'add-position-input__label-wrapper--active': inputValue.length || inputType === 'date' }"
     >
       <label class="label-wrapper__label">{{ label }}</label>
     </div>
     <input
       class="add-position-input__input"
-      type="text"
+      :type="inputType"
       :value="inputValue"
+      :step="inputType === 'text' ? 0 : 0.00000001"
       @input="emitInput"
     >
+    <div
+      v-if="errorMessage.length"
+      class="input__error"
+    >
+      <p class="error__message">Market pair must include quote currency</p>
+    </div>
   </div>
 </template>
 
@@ -28,12 +38,24 @@ export default defineComponent({
       type: String,
       required: true,
     },
+    inputType: {
+      type: String,
+      default: 'text',
+    },
+    mt0: {
+      type: Boolean,
+      default: false,
+    },
+    errorMessage: {
+      type: String,
+      default: '',
+    },
   },
   setup(props, { emit }) {
     const emitInput = (e: InputEvent) => {
       const { value } = e.target as HTMLInputElement;
 
-      emit(`${props.label.toLowerCase()}-input`, value);
+      emit(`${props.label.replaceAll(' ', '-').toLowerCase()}-input`, value);
     };
 
     return {
@@ -47,10 +69,9 @@ export default defineComponent({
 .add-position-input {
   width: 100%;
   height: 3rem;
-  margin-top: 2.5rem;
   position: relative;
 
-  border: 2px solid var(--primary);
+  border: 2px solid var(--third);
   border-radius: 5px;
 
   &:focus-within .add-position-input__label-wrapper,
@@ -66,6 +87,12 @@ export default defineComponent({
 
   &:focus-within {
     border-color: var(--accent);
+  }
+
+  &--error {
+    border-color: var(--red);
+    border-bottom-left-radius: 0;
+    border-bottom-right-radius: 0;
   }
 }
 
@@ -93,5 +120,28 @@ export default defineComponent({
   padding: .5rem 1.5rem;
 
   background: inherit;
+}
+
+.mt {
+  margin-top: 2.5rem;
+}
+
+.input__error {
+  width: calc(100% + 4px);
+  padding: 3px 5%;
+  position: absolute;
+  bottom: -2px;
+  left: -2px;
+  transform: translateY(100%);
+
+  background: var(--red);
+  // border: 2px solid var(--red);
+  border-bottom-left-radius: 5px;
+  border-bottom-right-radius: 5px;
+}
+
+.error__message {
+  color: var(--font-secondary);
+  font-size: .9rem;
 }
 </style>

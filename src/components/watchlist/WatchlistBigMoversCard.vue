@@ -76,6 +76,11 @@ export default defineComponent({
   grid-row: 2 / 3;
 }
 
+.price-data__heading,
+.percent-data__heading {
+  opacity: .7;
+}
+
 .price-data__price,
 .percent-data__change {
   margin-top: 4px;

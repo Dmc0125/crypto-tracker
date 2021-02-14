@@ -14,6 +14,7 @@
 - Option to switch to dark mode based on time
 
 - Component for coloring percent changes
+- Crypto icon component for formatting icons
 
 ### Coingecko response:
 
