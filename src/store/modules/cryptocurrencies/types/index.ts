@@ -1,6 +1,7 @@
 import {
   DispatchOptions, CommitOptions, Store as VuexStore, ActionContext,
 } from 'vuex';
+import { RootState } from '@/store/types';
 
 import { ActionTypes } from './action-types';
 import { GetterTypes } from './getter-types';
@@ -50,7 +51,7 @@ export type Getters = {
 
 // ACTIONS
 
-type ActionAugments = Omit<ActionContext<State, {}>, 'commit'> & {
+type ActionAugments = Omit<ActionContext<State, RootState>, 'commit'> & {
   commit<K extends keyof Mutations>(
     key: K,
     payload: Parameters<Mutations[K]>[1]
@@ -70,7 +71,7 @@ export type Mutations = {
 
 // STORE
 
-export type ApiStore<S = State> = Omit<
+export type CryptocurrenciesStore<S = State> = Omit<
   VuexStore<S>,
   'commit' | 'dispatch' | 'getters'
 > & {

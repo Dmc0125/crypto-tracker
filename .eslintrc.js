@@ -20,6 +20,7 @@ module.exports = {
     'no-param-reassign': 0,
     'max-len': ['error', { code: 150 }],
     'no-plusplus': 0,
+    'import/no-cycle': 0,
     '@typescript-eslint/camelcase': 0,
     '@typescript-eslint/no-use-before-define': 0,
   },

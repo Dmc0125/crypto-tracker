@@ -9,12 +9,18 @@
   - for each position
   - for whole portfolio
 
-# Ideas
+# TODO
 
-- Option to switch to dark mode based on time
+- Validate Add position inputs
+
+- Store positions in localStorage
 
 - Component for coloring percent changes
 - Crypto icon component for formatting icons
+
+# Ideas
+
+- Option to switch to dark mode based on time
 
 ### Coingecko response:
 

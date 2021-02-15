@@ -20,7 +20,7 @@
       v-if="errorMessage.length"
       class="input__error"
     >
-      <p class="error__message">Market pair must include quote currency</p>
+      <p class="error__message">{{ errorMessage }}</p>
     </div>
   </div>
 </template>

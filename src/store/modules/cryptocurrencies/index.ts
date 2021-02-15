@@ -10,14 +10,15 @@ import {
 } from './types';
 import { ActionTypes } from './types/action-types';
 import { MutationTypes } from './types/mutation-types';
+import { GetterTypes } from './types/getter-types';
 
 const state: State = {
   cryptocurrencies: [],
 };
 
 const getters: GetterTree<State, RootState> & Getters = {
-  getCryptocurrencies: _state => _state.cryptocurrencies,
-  getCryptocurrenciesBySymbol: _state => symbols => {
+  [GetterTypes.GetCryptocurrencies]: _state => _state.cryptocurrencies,
+  [GetterTypes.GetCryptocurrenciesBySymbol]: _state => symbols => {
     if (!_state.cryptocurrencies.length) {
       return [];
     }
@@ -26,7 +27,7 @@ const getters: GetterTree<State, RootState> & Getters = {
       (_state.cryptocurrencies.find(({ symbol }) => symbol === _symbol.toLowerCase()) as CryptocurrencyData)
     ));
   },
-  getSortedCurrencies: _state => _state.cryptocurrencies
+  [GetterTypes.GetSortedCurrencies]: _state => _state.cryptocurrencies
     .sort(({ usdMarketData: aUsdData }, { usdMarketData: bUsdData }) => bUsdData.priceChangePercentage24h - aUsdData.priceChangePercentage24h),
 };
 

@@ -1,7 +1,7 @@
 <template>
   <form
     class="add-position"
-    @submit.prevent
+    @submit.prevent="addPosition"
   >
     <h2>Add position</h2>
 
@@ -56,7 +56,7 @@
     <add-position-input
       label="Date"
       inputType="date"
-      :inputValue="date"
+      :inputValue="_date"
       @date-input="updateDate"
     />
 
@@ -71,83 +71,48 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, ref } from 'vue';
+import { defineComponent } from 'vue';
+
+import { useStore } from '@/store';
+import getMarketPair from '@/components/add-position/add-position-helpers/get-market-pair';
+import getEntries from '@/components/add-position/add-position-helpers/get-entries';
+import getDate from '@/components/add-position/add-position-helpers/get-date';
+
+import { NewPosition } from '@/store/modules/portfolio/types';
+import { ActionTypes } from '@/store/modules/portfolio/types/action-types';
 
 import AddPositionInput from '@/components/add-position/AddPositionInput.vue';
-
-const getMarketPair = () => {
-  const marketPair = ref('');
-
-  const updateMarketPair = (newMarketPair: string) => {
-    marketPair.value = newMarketPair;
-  };
-
-  return {
-    marketPair,
-    updateMarketPair,
-  };
-};
-
-const getEntries = () => {
-  const entries = ref([{
-    price: '',
-    amount: '',
-  }]);
-
-  const updatePrice = (i: number, newPrice: string) => {
-    entries.value[i].price = newPrice;
-  };
-
-  const updateAmount = (i: number, newAmount: string) => {
-    entries.value[i].amount = newAmount;
-  };
-
-  const addEntry = () => {
-    entries.value = [
-      ...entries.value,
-      {
-        price: '',
-        amount: '',
-      },
-    ];
-  };
-
-  const removeEntry = (i: number) => {
-    entries.value.splice(i, 1);
-  };
-
-  return {
-    entries,
-    updatePrice,
-    updateAmount,
-    addEntry,
-    removeEntry,
-  };
-};
-
-const getDate = () => {
-  const date = ref('');
-
-  const updateDate = (newDate: string) => {
-    date.value = newDate;
-  };
-
-  return {
-    date,
-    updateDate,
-  };
-};
 
 export default defineComponent({
   components: {
     AddPositionInput,
   },
   setup() {
-    const { marketPair, updateMarketPair } = getMarketPair();
+    const { dispatch } = useStore();
+
+    const { marketPair, updateMarketPair, getSymbols } = getMarketPair();
     const {
-      entries, updatePrice, updateAmount, addEntry, removeEntry,
+      entries, updatePrice, updateAmount, addEntry, removeEntry, getEntryData,
     } = getEntries();
-    const { date, updateDate } = getDate();
+    const { date: _date, updateDate } = getDate();
+
+    const addPosition = () => {
+      const [symbol, quoteSymbol] = getSymbols();
+      const { amount, averagePrice } = getEntryData();
+
+      const newPosition: NewPosition = {
+        symbol: symbol.toLowerCase(),
+        quoteSymbol: quoteSymbol.toLowerCase(),
+        amount,
+        marketPair: marketPair.value.toLowerCase(),
+        entryPrice: averagePrice,
+        date: {
+          open: new Date(_date.value),
+        },
+      };
+
+      dispatch(ActionTypes.AddPosition, newPosition);
+    };
 
     return {
       marketPair,
@@ -159,8 +124,10 @@ export default defineComponent({
       addEntry,
       removeEntry,
 
-      date,
+      _date,
       updateDate,
+
+      addPosition,
     };
   },
 });

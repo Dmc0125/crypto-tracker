@@ -16,7 +16,8 @@ import { defineComponent, onMounted } from 'vue';
 
 import { useStore } from '@/store';
 
-import { ActionTypes } from '@/store/modules/cryptocurrencies/types/action-types';
+import { ActionTypes as CryptocurrencyActionTypes } from '@/store/modules/cryptocurrencies/types/action-types';
+import { ActionTypes as PortfolioActionTypes } from '@/store/modules/portfolio/types/action-types';
 
 import MainCard from '@/components/main-card/MainCard.vue';
 import AddPosition from '@/components/add-position/AddPosition.vue';
@@ -30,7 +31,9 @@ export default defineComponent({
     const { dispatch } = useStore();
 
     onMounted(() => {
-      dispatch(ActionTypes.GetCoingeckoData);
+      dispatch(CryptocurrencyActionTypes.GetCoingeckoData);
+
+      dispatch(PortfolioActionTypes.GetPositions);
     });
 
     return {};

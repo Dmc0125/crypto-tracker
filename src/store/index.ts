@@ -1,6 +1,7 @@
 import { createStore, createLogger } from 'vuex';
 
-import apiState from './modules/cryptocurrencies';
+import cryptocurrenciesState from './modules/cryptocurrencies';
+import portfolioState from './modules/portfolio';
 
 import { Store } from './types';
 
@@ -10,7 +11,8 @@ const plugins = debug ? [createLogger({})] : [];
 export const store = createStore({
   plugins,
   modules: {
-    apiState,
+    cryptocurrenciesState,
+    portfolioState,
   },
 });
 
