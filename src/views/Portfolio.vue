@@ -30,7 +30,7 @@ import { computed, defineComponent } from 'vue';
 
 import { useStore } from '@/store';
 
-import PortfolioPosition from '@/components/portfolio/PortfolioPosition.vue';
+import PortfolioPosition from '@/layouts/portfolio/PortfolioPosition.vue';
 
 export default defineComponent({
   components: {
@@ -85,7 +85,7 @@ export default defineComponent({
 }
 
 .header__amount {
-  grid-column: 8 / 11;
+  grid-column: 8 / 10;
 }
 
 .header__entry-size {
@@ -97,11 +97,11 @@ export default defineComponent({
 }
 
 .header__current-size {
-  grid-column: 18 / 21;
+  grid-column: 19 / 22;
 }
 
 .header__pnl {
-  grid-column: 22 / 25;
+  grid-column: 23 / 25;
   justify-self: center;
 }
 

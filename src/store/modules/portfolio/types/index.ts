@@ -54,6 +54,7 @@ type ActionAugments = Omit<ActionContext<State, RootState>, 'commit'> & {
 export type Actions = {
   [ActionTypes.AddPosition]: (context: ActionAugments, newPositionData: NewPosition) => void;
   [ActionTypes.GetPositions]: (context: ActionAugments) => void;
+  [ActionTypes.UpdatePositions]: (context: ActionAugments) => void;
 }
 
 // MUTATIONS

@@ -33,11 +33,6 @@
         />
       </ul>
     </section>
-
-    <loading
-      v-else
-      size="5rem"
-    />
   </section>
 </template>
 
@@ -48,15 +43,13 @@ import {
 
 import { useStore } from '@/store';
 
-import WatchlistCryptocurrency from '@/components/watchlist/WatchlistCryptocurrency.vue';
-import WatchlistBigMoversCard from '@/components/watchlist/WatchlistBigMoversCard.vue';
-import Loading from '@/components/loading/Loading.vue';
+import WatchlistCryptocurrency from '@/layouts/watchlist/WatchlistCryptocurrency.vue';
+import WatchlistBigMoversCard from '@/layouts/watchlist/WatchlistBigMoversCard.vue';
 
 export default defineComponent({
   components: {
     WatchlistCryptocurrency,
     WatchlistBigMoversCard,
-    Loading,
   },
   setup() {
     const { getters } = useStore();

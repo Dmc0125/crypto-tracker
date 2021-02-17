@@ -8,12 +8,19 @@
 
     <div class="card__price-data">
       <h5 class="price-data__heading">Price</h5>
-      <p class="price-data__price">${{ Number(cryptocurrencyData.usdMarketData.price).toFixed(2) }}</p>
+      <price-formatted
+        class="price-data__price"
+        :price="cryptocurrencyData.usdMarketData.price"
+        quote="usd"
+      />
     </div>
 
     <div class="card__percent-data">
       <h5 class="percent-data__heading">Price change</h5>
-      <p class="percent-data__change">{{ Number(cryptocurrencyData.usdMarketData.priceChangePercentage24h).toFixed(2) }}%</p>
+      <percent-formatted
+        class="percent-data__change"
+        :percentage="cryptocurrencyData.usdMarketData.priceChangePercentage24h"
+      />
     </div>
   </div>
 </template>

@@ -1,42 +1,59 @@
 <template>
   <main
     class="app"
-    color-mode="dark"
+    color-mode="light"
   >
     <section class="main-section">
       <main-card />
     </section>
 
     <add-position />
+
+    <loading v-if="!cryptocurrencies.length" />
   </main>
 </template>
 
 <script lang="ts">
-import { defineComponent, onMounted } from 'vue';
+import {
+  computed, defineComponent, onMounted, watchEffect,
+} from 'vue';
 
 import { useStore } from '@/store';
 
 import { ActionTypes as CryptocurrencyActionTypes } from '@/store/modules/cryptocurrencies/types/action-types';
 import { ActionTypes as PortfolioActionTypes } from '@/store/modules/portfolio/types/action-types';
 
-import MainCard from '@/components/main-card/MainCard.vue';
-import AddPosition from '@/components/add-position/AddPosition.vue';
+import MainCard from '@/layouts/main-card/MainCard.vue';
+import AddPosition from '@/layouts/add-position/AddPosition.vue';
+import Loading from '@/layouts/loading/Loading.vue';
 
 export default defineComponent({
   components: {
     MainCard,
     AddPosition,
+    Loading,
   },
   setup() {
-    const { dispatch } = useStore();
+    const { dispatch, state } = useStore();
 
     onMounted(() => {
       dispatch(CryptocurrencyActionTypes.GetCoingeckoData);
-
       dispatch(PortfolioActionTypes.GetPositions);
     });
 
-    return {};
+    const cryptocurrencies = computed(() => state.cryptocurrenciesState.cryptocurrencies);
+    const positions = computed(() => state.portfolioState.positions);
+
+    watchEffect(() => {
+      if (cryptocurrencies.value.length && positions.value.length) {
+        console.log(positions.value);
+        dispatch(PortfolioActionTypes.UpdatePositions);
+      }
+    });
+
+    return {
+      cryptocurrencies,
+    };
   },
 });
 </script>

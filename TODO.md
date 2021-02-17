@@ -11,6 +11,8 @@
 
 # TODO
 
+- Store Cryptocurrencies in object
+
 - Validate Add position inputs
 
 - Store positions in localStorage

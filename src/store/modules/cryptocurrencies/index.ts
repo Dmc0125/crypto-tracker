@@ -33,10 +33,10 @@ const getters: GetterTree<State, RootState> & Getters = {
 
 const actions: ActionTree<State, RootState> & Actions = {
   [ActionTypes.GetCoingeckoData]: async ({ commit }) => {
-    const usdJson = await fetch(`${API_URL}coins/markets?vs_currency=usd&order=market_cap_desc&per_page=100&page=1&sparkline=false`);
+    const usdJson = await fetch(`${API_URL}coins/markets?vs_currency=usd&order=market_cap_desc&per_page=150&page=1&sparkline=false`);
     const usdCoingeckoResponse: CoingeckoResponse[] = await usdJson.json();
 
-    const btcJson = await fetch(`${API_URL}coins/markets?vs_currency=btc&order=market_cap_desc&per_page=100&page=1&sparkline=false`);
+    const btcJson = await fetch(`${API_URL}coins/markets?vs_currency=btc&order=market_cap_desc&per_page=150&page=1&sparkline=false`);
     const btcCoingeckoResponse: CoingeckoResponse[] = await btcJson.json();
 
     const cryptocurrencyData = usdCoingeckoResponse.map<CryptocurrencyData>(({

@@ -1,4 +1,5 @@
 export enum ActionTypes {
   AddPosition = 'addPosition',
-  GetPositions = 'GetPositions',
+  GetPositions = 'getPositions',
+  UpdatePositions = 'updatePositions',
 }

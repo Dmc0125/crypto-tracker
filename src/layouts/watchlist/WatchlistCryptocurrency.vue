@@ -12,13 +12,18 @@
     <p class="cryptocurrency__usd-price">${{ usdPrice }}</p>
     <p class="cryptocurrency__btc-price">BTC {{ btcPrice }}</p>
 
-    <p class="cryptocurrency__usd-percent-change">{{ usdPercentChange }}%</p>
-    <p class="cryptocurrency__btc-percent-change">{{ btcPercentChange }}%</p>
+    <percent-formatted
+      class="cryptocurrency__usd-percent-change"
+      :percentage="usdPercentChange"
+    />
+    <percent-formatted
+      class="cryptocurrency__btc-percent-change"
+      :percentage="btcPercentChange"
+    />
   </li>
 </template>
 
 <script lang="ts">
-/* eslint-disable no-confusing-arrow */
 import {
   defineComponent, PropType, computed,
 } from 'vue';
@@ -37,10 +42,10 @@ export default defineComponent({
     const btcMarketData = computed(() => props.cryptocurrencyData.btcMarketData);
 
     const usdPrice = computed(() => usdMarketData.value.price.toFixed(2));
-    const usdPercentChange = computed(() => usdMarketData.value.priceChangePercentage24h.toFixed(2));
+    const usdPercentChange = computed(() => usdMarketData.value.priceChangePercentage24h);
 
     const btcPrice = computed(() => btcMarketData.value.price.toFixed(8));
-    const btcPercentChange = computed(() => btcMarketData.value.priceChangePercentage24h.toFixed(2));
+    const btcPercentChange = computed(() => btcMarketData.value.priceChangePercentage24h);
 
     return {
       usdPrice,

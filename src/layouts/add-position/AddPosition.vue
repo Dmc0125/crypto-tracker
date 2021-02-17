@@ -74,14 +74,13 @@
 import { defineComponent } from 'vue';
 
 import { useStore } from '@/store';
-import getMarketPair from '@/components/add-position/add-position-helpers/get-market-pair';
-import getEntries from '@/components/add-position/add-position-helpers/get-entries';
-import getDate from '@/components/add-position/add-position-helpers/get-date';
-
 import { NewPosition } from '@/store/modules/portfolio/types';
 import { ActionTypes } from '@/store/modules/portfolio/types/action-types';
 
-import AddPositionInput from '@/components/add-position/AddPositionInput.vue';
+import AddPositionInput from '@/layouts/add-position/AddPositionInput.vue';
+import getMarketPair from './add-position-helpers/get-market-pair';
+import getEntries from './add-position-helpers/get-entries';
+import getDate from './add-position-helpers/get-date';
 
 export default defineComponent({
   components: {

@@ -7,14 +7,33 @@
     >
     <h4 class="position__market-pair">{{ positionData.marketPair.toUpperCase() }}</h4>
 
-    <p class="position__entry-price">{{ positionData.entryPrice }}</p>
+    <price-formatted
+      class="position__entry-price"
+      :price="positionData.entryPrice"
+      :quote="positionData.quoteSymbol"
+    />
     <p class="position__amount">{{ positionData.amount }}</p>
-    <p class="position__entry-size">{{ positionData.entrySize}}</p>
+    <price-formatted
+      class="position__entry-size"
+      :price="positionData.entrySize"
+      :quote="positionData.quoteSymbol"
+    />
 
-    <p class="position__current-price">{{ positionData.currentPrice }}</p>
-    <p class="position__current-size">{{ positionData.currentSize }}</p>
+    <price-formatted
+      class="position__current-price"
+      :price="positionData.currentPrice"
+      :quote="positionData.quoteSymbol"
+    />
+    <price-formatted
+      class="position__current-size"
+      :price="positionData.currentSize"
+      :quote="positionData.quoteSymbol"
+    />
 
-    <p class="position__pnl">{{ positionData.pnlPercentage.toFixed(2) }}%</p>
+    <percent-formatted
+      class="position__pnl"
+      :percentage="positionData.pnlPercentage"
+    >{{ positionData.pnlPercentage }}</percent-formatted>
   </li>
 </template>
 
@@ -65,7 +84,7 @@ export default defineComponent({
 }
 
 .position__amount {
-  grid-column: 9 / 11;
+  grid-column: 8 / 10;
 }
 
 .position__entry-size {
@@ -77,11 +96,11 @@ export default defineComponent({
 }
 
 .position__current-size {
-  grid-column: 18 / 21;
+  grid-column: 19 / 22;
 }
 
 .position__pnl {
-  grid-column: 22 / 25;
+  grid-column: 23 / 25;
   justify-self: center;
 }
 </style>
