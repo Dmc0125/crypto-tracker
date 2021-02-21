@@ -1,6 +1,6 @@
 <template>
   <p :class="Number(percentage.toFixed(2)) >= 0 ? 'percentage--green' : 'percentage--red'">
-    {{ Math.abs(Number(percentage.toFixed(2))) }}%
+    {{ percentage.toFixed(2) }}%
   </p>
 </template>
 

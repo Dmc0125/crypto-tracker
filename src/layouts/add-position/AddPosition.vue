@@ -74,7 +74,7 @@
 import { defineComponent } from 'vue';
 
 import { useStore } from '@/store';
-import { NewPosition } from '@/store/modules/portfolio/types';
+import { PositionEntryData } from '@/store/modules/portfolio/types';
 import { ActionTypes } from '@/store/modules/portfolio/types/action-types';
 
 import AddPositionInput from '@/layouts/add-position/AddPositionInput.vue';
@@ -99,12 +99,12 @@ export default defineComponent({
       const [symbol, quoteSymbol] = getSymbols();
       const { amount, averagePrice } = getEntryData();
 
-      const newPosition: NewPosition = {
+      const newPosition: PositionEntryData = {
         symbol: symbol.toLowerCase(),
         quoteSymbol: quoteSymbol.toLowerCase(),
         amount,
         marketPair: marketPair.value.toLowerCase(),
-        entryPrice: averagePrice,
+        price: averagePrice,
         date: {
           open: new Date(_date.value),
         },
@@ -134,16 +134,8 @@ export default defineComponent({
 
 <style lang="scss" scoped>
 .add-position {
-  width: 25%;
+  width: 100%;
   height: 100%;
-  position: fixed;
-  top: 0;
-  right: 0;
-  padding: 4rem 3rem;
-  overflow-y: auto;
-
-  background: var(--secondary);
-  box-shadow: 0 0 16px rgba(0, 0, 0, .05);
 }
 
 .add-position__more-entries {

@@ -38,7 +38,7 @@
 
 <script lang="ts">
 import {
-  computed, defineComponent,
+  computed, defineComponent, watchEffect,
 } from 'vue';
 
 import { useStore } from '@/store';

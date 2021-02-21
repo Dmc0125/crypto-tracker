@@ -6,45 +6,22 @@ import { RootState } from '@/store/types';
 import { ActionTypes } from './action-types';
 import { GetterTypes } from './getter-types';
 import { MutationTypes } from './mutation-types';
+import { CryptocurrencyData, CoingeckoResponse } from './types';
 
 // STATE
 
-export type MarketData = {
-  price: number;
-  marketCap: number;
-  totalVolume: number;
-  priceChange24h: number;
-  priceChangePercentage24h: number;
-}
-
-export type CoingeckoResponse = {
-  id: string;
-  symbol: string;
-  name: string;
-  image: string;
-  current_price: number;
-  market_cap: number;
-  total_volume: number;
-  price_change_24h: number;
-  price_change_percentage_24h: number;
-}
-
-export type CryptocurrencyData = Omit<
-  CoingeckoResponse,
-  'current_price' | 'market_cap' | 'total_volume' | 'price_change_24h' | 'price_change_percentage_24h'
-> & {
-  usdMarketData: MarketData;
-  btcMarketData: MarketData;
-}
+export type Cryptocurrencies = {
+  [key: string]: CryptocurrencyData;
+};
 
 export type State = {
-  cryptocurrencies: CryptocurrencyData[];
+  cryptocurrencies: Cryptocurrencies;
 }
 
 // GETTERS
 
 export type Getters = {
-  [GetterTypes.GetCryptocurrencies]: (state: State) => CryptocurrencyData[];
+  [GetterTypes.GetCryptocurrencies]: (state: State) => Cryptocurrencies;
   [GetterTypes.GetCryptocurrenciesBySymbol]: (state: State) => (symbols: string[]) => CryptocurrencyData[];
   [GetterTypes.GetSortedCurrencies]: (state: State) => CryptocurrencyData[];
 }
@@ -66,7 +43,7 @@ export type Actions = {
 
 export type Mutations = {
   // eslint-disable-next-line max-len
-  [MutationTypes.SET_CRYPTOCURRENCIES]: (state: State, cryptocurrencyData: CryptocurrencyData[]) => void;
+  [MutationTypes.SET_CRYPTOCURRENCIES]: (state: State, cryptocurrencyData: Cryptocurrencies) => void;
 }
 
 // STORE
@@ -91,3 +68,8 @@ export type CryptocurrenciesStore<S = State> = Omit<
     options?: CommitOptions,
   ): ReturnType<Mutations[K]>;
 }
+
+export {
+  CoingeckoResponse,
+  CryptocurrencyData,
+};

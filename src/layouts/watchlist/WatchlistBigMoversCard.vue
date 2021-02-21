@@ -1,7 +1,10 @@
 <template>
   <div class="big-movers-card">
     <div class="card__logo">
-      <img :src="cryptocurrencyData.image" :alt="`${cryptocurrencyData.symbol}`">
+      <img
+        :src="cryptocurrencyData.image"
+        :alt="`${cryptocurrencyData.symbol}`"
+      >
     </div>
 
     <h4 class="card__symbol">{{ cryptocurrencyData.symbol.toUpperCase() }}</h4>

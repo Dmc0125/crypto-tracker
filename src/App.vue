@@ -1,21 +1,27 @@
 <template>
   <main
     class="app"
-    color-mode="light"
+    color-mode="dark"
   >
     <section class="main-section">
       <main-card />
     </section>
 
-    <add-position />
+    <side-card>
+      <add-position />
+    </side-card>
 
-    <loading v-if="!cryptocurrencies.length" />
+    <!-- <side-card>
+      <sell-position />
+    </side-card> -->
+
+    <loading v-if="!Object.keys(cryptocurrencies).length" />
   </main>
 </template>
 
 <script lang="ts">
 import {
-  computed, defineComponent, onMounted, watchEffect,
+  computed, defineComponent, onMounted,
 } from 'vue';
 
 import { useStore } from '@/store';
@@ -24,32 +30,29 @@ import { ActionTypes as CryptocurrencyActionTypes } from '@/store/modules/crypto
 import { ActionTypes as PortfolioActionTypes } from '@/store/modules/portfolio/types/action-types';
 
 import MainCard from '@/layouts/main-card/MainCard.vue';
+import SideCard from '@/layouts/side-card/SideCard.vue';
 import AddPosition from '@/layouts/add-position/AddPosition.vue';
+// import SellPosition from '@/layouts/sell-position/SellPosition.vue';
 import Loading from '@/layouts/loading/Loading.vue';
 
 export default defineComponent({
   components: {
     MainCard,
+    SideCard,
     AddPosition,
+    // SellPosition,
     Loading,
   },
   setup() {
     const { dispatch, state } = useStore();
 
-    onMounted(() => {
-      dispatch(CryptocurrencyActionTypes.GetCoingeckoData);
+    onMounted(async () => {
+      await dispatch(CryptocurrencyActionTypes.GetCoingeckoData);
       dispatch(PortfolioActionTypes.GetPositions);
+      dispatch(PortfolioActionTypes.UpdatePositions);
     });
 
     const cryptocurrencies = computed(() => state.cryptocurrenciesState.cryptocurrencies);
-    const positions = computed(() => state.portfolioState.positions);
-
-    watchEffect(() => {
-      if (cryptocurrencies.value.length && positions.value.length) {
-        console.log(positions.value);
-        dispatch(PortfolioActionTypes.UpdatePositions);
-      }
-    });
 
     return {
       cryptocurrencies,

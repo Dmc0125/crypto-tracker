@@ -19,10 +19,13 @@ export const addPositionToLocalStorage = (position: Position) => {
   const lsData = localStorage.getItem(LS_POSITIONS_DATA);
 
   if (!lsData) {
-    localStorage.setItem(LS_POSITIONS_DATA, JSON.stringify([position]));
+    localStorage.setItem(LS_POSITIONS_DATA, JSON.stringify({
+      [position.id]: position,
+    }));
     return;
   }
 
   const lsPositions = JSON.parse(lsData);
-  localStorage.setItem(LS_POSITIONS_DATA, JSON.stringify([...lsPositions, position]));
+  lsPositions[position.id] = position;
+  localStorage.setItem(LS_POSITIONS_DATA, JSON.stringify(lsPositions));
 };

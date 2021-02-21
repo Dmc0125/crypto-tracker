@@ -1,5 +1,5 @@
 <template>
-  <li class="position">
+  <li class="position" @click="sellPosition">
     <img
       class="position__image"
       :src="positionData.image"
@@ -9,38 +9,40 @@
 
     <price-formatted
       class="position__entry-price"
-      :price="positionData.entryPrice"
+      :price="positionData.entry.price"
       :quote="positionData.quoteSymbol"
     />
-    <p class="position__amount">{{ positionData.amount }}</p>
+    <p class="position__amount">{{ positionData.current.amount }}</p>
     <price-formatted
       class="position__entry-size"
-      :price="positionData.entrySize"
+      :price="positionData.entry.size"
       :quote="positionData.quoteSymbol"
     />
 
     <price-formatted
       class="position__current-price"
-      :price="positionData.currentPrice"
+      :price="positionData.current.price"
       :quote="positionData.quoteSymbol"
     />
     <price-formatted
       class="position__current-size"
-      :price="positionData.currentSize"
+      :price="positionData.current.size"
       :quote="positionData.quoteSymbol"
     />
 
     <percent-formatted
       class="position__pnl"
-      :percentage="positionData.pnlPercentage"
-    >{{ positionData.pnlPercentage }}</percent-formatted>
+      :percentage="positionData.current.pnlPercentage"
+    >{{ positionData.current.pnlPercentage }}</percent-formatted>
   </li>
 </template>
 
 <script lang="ts">
 import { defineComponent, PropType } from 'vue';
 
+import { useStore } from '@/store';
 import { Position } from '@/store/modules/portfolio/types';
+import { ActionTypes } from '@/store/modules/portfolio/types/action-types';
 
 export default defineComponent({
   props: {
@@ -49,8 +51,23 @@ export default defineComponent({
       required: true,
     },
   },
-  setup() {
-    return {};
+  setup(props) {
+    const { dispatch } = useStore();
+
+    const sellPosition = () => {
+      dispatch(ActionTypes.SellPosition, {
+        price: 45000,
+        amount: 0.0002,
+        date: {
+          open: new Date(Date.now()),
+        },
+        id: props.positionData.id,
+      });
+    };
+
+    return {
+      sellPosition,
+    };
   },
 });
 </script>
