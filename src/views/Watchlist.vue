@@ -18,11 +18,11 @@
       <ul class="watchlist__header">
         <li class="header__symbol">Symbol</li>
 
-        <li class="header__usd-price">USD Price</li>
-        <li class="header__btc-price">BTC Price</li>
+        <li class="header__price">Price</li>
 
-        <li class="header__usd-percent-change">USD change</li>
-        <li class="header__btc-percent-change">BTC change</li>
+        <li class="header__change">Change</li>
+
+        <li class="header__percent-change">Percent change</li>
       </ul>
 
       <ul class="watchlist__cryptocurrencies">
@@ -37,9 +37,7 @@
 </template>
 
 <script lang="ts">
-import {
-  computed, defineComponent, watchEffect,
-} from 'vue';
+import { computed, defineComponent } from 'vue';
 
 import { useStore } from '@/store';
 
@@ -56,7 +54,7 @@ export default defineComponent({
 
     const sortedCurrencies = computed(() => getters.getSortedCurrencies);
     const biggestMovers = computed(() => sortedCurrencies.value.slice(0, 2).concat(sortedCurrencies.value.slice(-2)));
-    const watchlistCryptocurrencies = computed(() => getters.getCryptocurrenciesBySymbol(['BTC', 'ETH', 'LTC', 'DOT', 'LINK', 'FTT', 'BNB']));
+    const watchlistCryptocurrencies = computed(() => getters.getCryptocurrenciesBySymbol(['BTC', 'ETH', 'DOT', 'LINK', 'SOL', 'FTT', 'BNB']));
 
     return {
       watchlistCryptocurrencies,
@@ -109,20 +107,16 @@ export default defineComponent({
   justify-self: center;
 }
 
-.header__usd-price {
-  grid-column: 8 / 11;
+.header__price {
+  grid-column: 10 / 14;
 }
 
-.header__btc-price {
-  grid-column: 12 / 16;
+.header__change {
+  grid-column: 15 / 19;
 }
 
-.header__usd-percent-change {
-  grid-column: 18 / 20;
-}
-
-.header__btc-percent-change {
-  grid-column: 21 / 23;
+.header__percent-change {
+  grid-column: 20 / 24;
 }
 
 .watchlist__cryptocurrencies {

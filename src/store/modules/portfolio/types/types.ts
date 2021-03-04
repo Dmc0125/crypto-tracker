@@ -1,34 +1,31 @@
-type PositionDate = {
-  open: Date;
-  close?: Date;
-}
+export type QuoteSymbol = 'USDT' | 'BTC';
 
 type PositionMarketData = {
   price: number;
   size: number;
   amount: number;
-  date: PositionDate;
+  date: Date;
 }
 
 export type PositionCloseData = {
   id: string;
   price: number;
   amount: number;
-  date: PositionDate;
+  date: Date;
 }
 
 export type PositionEntryData = {
   marketPair: string;
   symbol: string;
-  quoteSymbol: string;
+  quoteSymbol: QuoteSymbol;
   price: number;
   amount: number;
-  date: PositionDate;
+  date: Date;
 }
 
 export type Position = Omit<PositionEntryData, 'price' | 'amount' | 'date'> & {
   id: string;
-  image: string;
+  logo: string;
   type: 'open' | 'closed';
   entry: PositionMarketData;
   current: Omit<PositionMarketData, 'date'> & {
@@ -46,4 +43,8 @@ export type Position = Omit<PositionEntryData, 'price' | 'amount' | 'date'> & {
       pnlPercentage: number;
     })[];
   };
+}
+
+export type Positions = {
+  [key: string]: Position;
 }

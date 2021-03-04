@@ -1,7 +1,11 @@
 <template>
   <div
     class="add-position-input"
-    :class="{ mt: !mt0, 'add-position-input--error': errorMessage.length }"
+    :class="{
+      mt: !mt0,
+      'add-position-input--error': errorMessage.length,
+      'add-position-input--readonly': isReadonly,
+    }"
   >
     <div
       class="add-position-input__label-wrapper"
@@ -15,6 +19,7 @@
       :value="inputValue"
       :step="inputType === 'text' ? 0 : 0.00000001"
       @input="emitInput"
+      :readonly="isReadonly"
     >
     <div
       v-if="errorMessage.length"
@@ -41,6 +46,10 @@ export default defineComponent({
     inputType: {
       type: String,
       default: 'text',
+    },
+    isReadonly: {
+      type: Boolean,
+      default: false,
     },
     mt0: {
       type: Boolean,
@@ -93,6 +102,19 @@ export default defineComponent({
     border-color: var(--red);
     border-bottom-left-radius: 0;
     border-bottom-right-radius: 0;
+  }
+
+  &--readonly::after {
+    position: absolute;
+    content: '';
+    top: -2px;
+    bottom: -2px;
+    right: -2px;
+    left: -2px;
+    z-index: 1000;
+
+    background: rgba(0, 0, 0, .3);
+    border-radius: 5px;
   }
 }
 

@@ -1,19 +1,15 @@
 <template>
   <main
     class="app"
-    color-mode="dark"
+    color-mode="light"
   >
     <section class="main-section">
       <main-card />
     </section>
 
-    <side-card>
-      <add-position />
-    </side-card>
+    <position-create />
 
-    <!-- <side-card>
-      <sell-position />
-    </side-card> -->
+    <position-sidebar />
 
     <loading v-if="!Object.keys(cryptocurrencies).length" />
   </main>
@@ -30,24 +26,22 @@ import { ActionTypes as CryptocurrencyActionTypes } from '@/store/modules/crypto
 import { ActionTypes as PortfolioActionTypes } from '@/store/modules/portfolio/types/action-types';
 
 import MainCard from '@/layouts/main-card/MainCard.vue';
-import SideCard from '@/layouts/side-card/SideCard.vue';
-import AddPosition from '@/layouts/add-position/AddPosition.vue';
-// import SellPosition from '@/layouts/sell-position/SellPosition.vue';
+import PositionCreate from '@/layouts/position-sidebar/position-create/PositionCreate.vue';
+import PositionSidebar from '@/layouts/position-sidebar/PositionSidebar.vue';
 import Loading from '@/layouts/loading/Loading.vue';
 
 export default defineComponent({
   components: {
     MainCard,
-    SideCard,
-    AddPosition,
-    // SellPosition,
+    PositionCreate,
+    PositionSidebar,
     Loading,
   },
   setup() {
     const { dispatch, state } = useStore();
 
     onMounted(async () => {
-      await dispatch(CryptocurrencyActionTypes.GetCoingeckoData);
+      await dispatch(CryptocurrencyActionTypes.GetCryptocurrencies);
       dispatch(PortfolioActionTypes.GetPositions);
       dispatch(PortfolioActionTypes.UpdatePositions);
     });

@@ -1,3 +1,3 @@
 export enum ActionTypes {
-  GetCoingeckoData = 'getCoingeckoData',
+  GetCryptocurrencies = 'GetCryptocurrencies',
 }

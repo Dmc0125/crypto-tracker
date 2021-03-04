@@ -3,16 +3,16 @@
 - [X] Show BTC, ETH, LTC, DOT, LINK, FTT, BNB data
 - Create favorite watchlist
 
-- [ ] Enter and close positions
+- Enter and close positions
+  - [X] Enter position
+  - [X] Close position
+  - [ ] Add to position
 - [ ] Delete positions
 - [ ] Show PnL
   - for each position
   - for whole portfolio
 
 # TODO
-
-- Switch to API proxy
-  - https://crypto-tracker-api-proxy.herokuapp.com/api/currencies
 
 - Store Cryptocurrencies in object
 

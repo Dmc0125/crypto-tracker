@@ -3,14 +3,16 @@ import {
   GetterTree, ActionTree, MutationTree, Module,
 } from 'vuex';
 
-import { API_URL } from '@/constants';
 import { RootState } from '@/store/types';
+import { ActionTypes } from '@/store/modules/cryptocurrencies/types/action-types';
+import { MutationTypes } from '@/store/modules/cryptocurrencies/types/mutation-types';
+import { GetterTypes } from '@/store/modules/cryptocurrencies/types/getter-types';
 import {
-  State, Getters, Actions, Mutations, CoingeckoResponse, Cryptocurrencies,
-} from './types';
-import { ActionTypes } from './types/action-types';
-import { MutationTypes } from './types/mutation-types';
-import { GetterTypes } from './types/getter-types';
+  State, Getters, Actions, Mutations,
+} from '@/store/modules/cryptocurrencies/types';
+import { CryptocurrencyUsdtData, MarketData, CryptocurrenciesResponse } from '@/store/modules/cryptocurrencies/types/types';
+
+import { API_URL } from '@/constants';
 
 const state: State = {
   cryptocurrencies: {},
@@ -28,55 +30,23 @@ const getters: GetterTree<State, RootState> & Getters = {
       return [_state.cryptocurrencies[symbols[0]]] || [];
     }
 
-    return symbols.map(_symbol => _state.cryptocurrencies[_symbol.toLowerCase()]).filter(cryptocurrency => cryptocurrency);
+    return symbols.map(_symbol => _state.cryptocurrencies[_symbol]).filter(cryptocurrency => cryptocurrency);
   },
 
-  [GetterTypes.GetSortedCurrencies]: _state => Object.values(_state.cryptocurrencies)
-    .sort(({ usdMarketData: aUsdData }, { usdMarketData: bUsdData }) => bUsdData.priceChangePercentage24h - aUsdData.priceChangePercentage24h),
+  [GetterTypes.GetSortedCurrencies]: _state => (Object.values(_state.cryptocurrencies)
+    .filter(({ usdtData }) => usdtData) as CryptocurrencyUsdtData[])
+    .sort((
+      { usdtData: aUsdtData },
+      { usdtData: bUsdtData },
+    ) => (bUsdtData as MarketData).priceChangePercent - (aUsdtData as MarketData).priceChangePercent),
 };
 
 const actions: ActionTree<State, RootState> & Actions = {
-  [ActionTypes.GetCoingeckoData]: async ({ commit }) => {
-    const usdJson = await fetch(`${API_URL}coins/markets?vs_currency=usd&order=market_cap_desc&per_page=250&page=1&sparkline=false`);
-    const usdCoingeckoResponse: CoingeckoResponse[] = await usdJson.json();
+  [ActionTypes.GetCryptocurrencies]: async ({ commit }) => {
+    const cryptocurrenciesJson = await fetch(API_URL);
+    const cryptocurrenciesResponse: CryptocurrenciesResponse = await cryptocurrenciesJson.json();
 
-    const btcJson = await fetch(`${API_URL}coins/markets?vs_currency=btc&order=market_cap_desc&per_page=250&page=1&sparkline=false`);
-    const btcCoingeckoResponse: CoingeckoResponse[] = await btcJson.json();
-
-    const cryptocurrencyData = usdCoingeckoResponse.reduce<Cryptocurrencies>((acc, {
-      current_price, price_change_24h, price_change_percentage_24h, market_cap, total_volume, symbol, ...rest
-    }, i) => {
-      const {
-        current_price: btcCurrentPrice,
-        price_change_24h: btcPriceChange24h,
-        price_change_percentage_24h: btcPriceChangePercentage24h,
-        market_cap: btcMarketCap,
-        total_volume: btcTotalVolume,
-      } = btcCoingeckoResponse[i];
-
-      acc[symbol] = {
-        ...rest,
-        symbol,
-        usdMarketData: {
-          price: current_price,
-          priceChange24h: price_change_24h,
-          priceChangePercentage24h: price_change_percentage_24h,
-          marketCap: market_cap,
-          totalVolume: total_volume,
-        },
-        btcMarketData: {
-          price: btcCurrentPrice,
-          priceChange24h: btcPriceChange24h,
-          priceChangePercentage24h: btcPriceChangePercentage24h,
-          marketCap: btcMarketCap,
-          totalVolume: btcTotalVolume,
-        },
-      };
-
-      return acc;
-    }, {});
-
-    commit(MutationTypes.SET_CRYPTOCURRENCIES, cryptocurrencyData);
+    commit(MutationTypes.SET_CRYPTOCURRENCIES, cryptocurrenciesResponse.binanceCurrencies);
   },
 };
 

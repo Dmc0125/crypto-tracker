@@ -2,7 +2,7 @@
   <div class="big-movers-card">
     <div class="card__logo">
       <img
-        :src="cryptocurrencyData.image"
+        :src="cryptocurrencyData.logo"
         :alt="`${cryptocurrencyData.symbol}`"
       >
     </div>
@@ -11,18 +11,18 @@
 
     <div class="card__price-data">
       <h5 class="price-data__heading">Price</h5>
-      <price-formatted
+      <price
         class="price-data__price"
-        :price="cryptocurrencyData.usdMarketData.price"
-        quote="usd"
+        :price="cryptocurrencyData.usdtData.price"
+        :quote="cryptocurrencyData.usdtData.symbolQuote"
       />
     </div>
 
     <div class="card__percent-data">
       <h5 class="percent-data__heading">Price change</h5>
-      <percent-formatted
+      <percentage
         class="percent-data__change"
-        :percentage="cryptocurrencyData.usdMarketData.priceChangePercentage24h"
+        :percentage="cryptocurrencyData.usdtData.priceChangePercent"
       />
     </div>
   </div>
@@ -31,17 +31,21 @@
 <script lang="ts">
 import { defineComponent, PropType } from 'vue';
 
-import { CryptocurrencyData } from '@/store/modules/cryptocurrencies/types';
+import Price from '@/components/price/Price.vue';
+import Percentage from '@/components/percentage/Percentage.vue';
+
+import { CryptocurrencyUsdtData } from '@/store/modules/cryptocurrencies/types/types';
 
 export default defineComponent({
+  components: {
+    Price,
+    Percentage,
+  },
   props: {
     cryptocurrencyData: {
-      type: Object as PropType<CryptocurrencyData>,
+      type: Object as PropType<CryptocurrencyUsdtData>,
       required: true,
     },
-  },
-  setup() {
-    return {};
   },
 });
 </script>

@@ -6,13 +6,9 @@ import { RootState } from '@/store/types';
 import { ActionTypes } from './action-types';
 import { GetterTypes } from './getter-types';
 import { MutationTypes } from './mutation-types';
-import { CryptocurrencyData, CoingeckoResponse } from './types';
+import { Cryptocurrencies, CryptocurrencyData, CryptocurrencyUsdtData } from './types';
 
 // STATE
-
-export type Cryptocurrencies = {
-  [key: string]: CryptocurrencyData;
-};
 
 export type State = {
   cryptocurrencies: Cryptocurrencies;
@@ -23,7 +19,7 @@ export type State = {
 export type Getters = {
   [GetterTypes.GetCryptocurrencies]: (state: State) => Cryptocurrencies;
   [GetterTypes.GetCryptocurrenciesBySymbol]: (state: State) => (symbols: string[]) => CryptocurrencyData[];
-  [GetterTypes.GetSortedCurrencies]: (state: State) => CryptocurrencyData[];
+  [GetterTypes.GetSortedCurrencies]: (state: State) => CryptocurrencyUsdtData[];
 }
 
 // ACTIONS
@@ -36,7 +32,7 @@ type ActionAugments = Omit<ActionContext<State, RootState>, 'commit'> & {
 }
 
 export type Actions = {
-  [ActionTypes.GetCoingeckoData]: (context: ActionAugments) => void;
+  [ActionTypes.GetCryptocurrencies]: (context: ActionAugments) => void;
 }
 
 // MUTATIONS
@@ -68,8 +64,3 @@ export type CryptocurrenciesStore<S = State> = Omit<
     options?: CommitOptions,
   ): ReturnType<Mutations[K]>;
 }
-
-export {
-  CoingeckoResponse,
-  CryptocurrencyData,
-};

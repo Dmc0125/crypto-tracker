@@ -1,5 +1,5 @@
 <template>
-  <section class="side-card">
+  <section class="sidebar">
     <slot></slot>
   </section>
 </template>
@@ -15,7 +15,7 @@ export default defineComponent({
 </script>
 
 <style lang="scss" scoped>
-.side-card {
+.sidebar {
   width: 25%;
   height: 100vh;
   position: fixed;

@@ -1,5 +1,5 @@
 import { LS_POSITIONS_DATA } from '@/constants';
-import { Position } from '@/store/modules/portfolio/types';
+import { Position } from '@/store/modules/portfolio/types/types';
 
 export const getFromLocalStorage = <K>(key: string): null | K => {
   const lsData = localStorage.getItem(key);

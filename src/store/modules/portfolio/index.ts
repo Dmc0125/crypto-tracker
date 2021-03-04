@@ -1,25 +1,32 @@
 import {
   ActionTree, GetterTree, Module, MutationTree,
 } from 'vuex';
-import { v4 as uuidv4 } from 'uuid';
+
+import { RootState } from '@/store/types';
+
+import { GetterTypes } from '@/store/modules/portfolio/types/getter-types';
+import { MutationTypes } from '@/store/modules/portfolio/types/mutation-types';
+import { ActionTypes } from '@/store/modules/portfolio/types/action-types';
+import {
+  Actions, Getters, Mutations, State,
+} from '@/store/modules/portfolio/types';
+import { Positions } from '@/store/modules/portfolio/types/types';
 
 import { addPositionToLocalStorage, getFromLocalStorage, setInLocalStorage } from '@/utils/local-storage';
 import { LS_POSITIONS_DATA } from '@/constants';
-import { RootState } from '@/store/types';
-import {
-  Actions, Getters, Mutations, PositionEntryData, Position, State, Positions,
-} from './types';
-import { GetterTypes } from './types/getter-types';
-import { MutationTypes } from './types/mutation-types';
-import { ActionTypes } from './types/action-types';
-import { Cryptocurrencies, CryptocurrencyData } from '../cryptocurrencies/types';
+
+import { createPositionData, updatePositionData } from './helpers';
 
 const state: State = {
   positions: {},
+
+  sellPositionId: '',
 };
 
 const getters: GetterTree<State, RootState> & Getters = {
   [GetterTypes.GetPortfolioPositions]: _state => _state.positions,
+
+  [GetterTypes.GetSellPositionId]: _state => _state.sellPositionId,
 };
 
 const actions: ActionTree<State, RootState> & Actions = {
@@ -28,11 +35,15 @@ const actions: ActionTree<State, RootState> & Actions = {
 
     const positionData = createPositionData(cryptocurrencies, newPosition);
 
+    if (!positionData) {
+      return;
+    }
+
     commit(MutationTypes.ADD_POSITION, positionData);
     addPositionToLocalStorage(positionData);
   },
 
-  [ActionTypes.SellPosition]: ({ commit, state: _state }, positionCloseData) => {
+  [ActionTypes.SellPosition]: ({ commit, dispatch, state: _state }, positionCloseData) => {
     const { id, price: closePrice, amount: closeAmount } = positionCloseData;
 
     const position = _state.positions[id];
@@ -65,6 +76,7 @@ const actions: ActionTree<State, RootState> & Actions = {
       };
 
       commit(MutationTypes.ADD_POSITION, position);
+      dispatch(ActionTypes.UpdatePositions);
       addPositionToLocalStorage(position);
       return;
     }
@@ -116,6 +128,7 @@ const actions: ActionTree<State, RootState> & Actions = {
     };
 
     commit(MutationTypes.ADD_POSITION, position);
+    dispatch(ActionTypes.UpdatePositions);
     addPositionToLocalStorage(position);
   },
 
@@ -136,7 +149,6 @@ const actions: ActionTree<State, RootState> & Actions = {
       const cryptocurrency = rootState.cryptocurrenciesState.cryptocurrencies[position.symbol];
 
       if (!cryptocurrency) {
-        // FIX: If cryptocurrency is not in base coingecko response fetch specific cryptocurrency data
         acc[position.id] = position;
         return acc;
       }
@@ -158,6 +170,10 @@ const mutations: MutationTree<State> & Mutations = {
   [MutationTypes.SET_POSITIONS]: (_state, positions) => {
     _state.positions = positions;
   },
+
+  [MutationTypes.SET_SELL_POSITION_ID]: (_state, positionId) => {
+    _state.sellPositionId = positionId;
+  },
 };
 
 const store: Module<State, RootState> = {
@@ -168,55 +184,3 @@ const store: Module<State, RootState> = {
 };
 
 export default store;
-
-function createPositionData(cryptocurrencies: Cryptocurrencies, positionEntry: PositionEntryData): Position {
-  const {
-    symbol, quoteSymbol, amount, price: entryPrice, date, marketPair,
-  } = positionEntry;
-
-  const { usdMarketData, btcMarketData, image } = cryptocurrencies[symbol];
-  const { price: currentPrice } = quoteSymbol === 'usd' ? usdMarketData : btcMarketData;
-
-  const entrySize = entryPrice * amount;
-  const currentSize = currentPrice * amount;
-
-  return {
-    marketPair,
-    symbol,
-    quoteSymbol,
-    image,
-    id: uuidv4(),
-    type: 'open',
-    entry: {
-      price: entryPrice,
-      size: entrySize,
-      amount,
-      date,
-    },
-    current: {
-      price: currentPrice,
-      size: currentSize,
-      pnl: currentSize - entrySize,
-      pnlPercentage: (currentPrice / entryPrice - 1) * 100,
-      amount,
-    },
-  };
-}
-
-function updatePositionData(cryptocurrency: CryptocurrencyData, oldPositionData: Position): Position {
-  const { usdMarketData, btcMarketData } = cryptocurrency;
-  const { price } = oldPositionData.quoteSymbol === 'usd' ? usdMarketData : btcMarketData;
-
-  const currentSize = price * oldPositionData.current.amount;
-
-  return {
-    ...oldPositionData,
-    current: {
-      ...oldPositionData.current,
-      price,
-      size: currentSize,
-      pnl: currentSize - oldPositionData.entry.size,
-      pnlPercentage: (oldPositionData.current.price / oldPositionData.entry.price - 1) * 100,
-    },
-  };
-}

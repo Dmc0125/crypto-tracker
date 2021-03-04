@@ -4,33 +4,43 @@
   >
     <img
       class="cryptocurrency__logo"
-      :src="cryptocurrencyData.image"
+      :src="cryptocurrencyData.logo"
       :alt="cryptocurrencyData.symbol"
     />
     <h4 class="cryptocurrency__symbol">{{ cryptocurrencyData.symbol.toUpperCase() }}</h4>
 
-    <p class="cryptocurrency__usd-price">${{ usdPrice }}</p>
-    <p class="cryptocurrency__btc-price">BTC {{ btcPrice }}</p>
-
-    <percent-formatted
-      class="cryptocurrency__usd-percent-change"
-      :percentage="usdPercentChange"
+    <price
+      class="cryptocurrency__price"
+      :price="price"
+      :quote="quote"
     />
-    <percent-formatted
-      class="cryptocurrency__btc-percent-change"
-      :percentage="btcPercentChange"
+
+    <price
+      class="cryptocurrency__change"
+      :price="change"
+      :quote="quote"
+    />
+
+    <percentage
+      class="cryptocurrency__percent-change"
+      :percentage="percentChange"
     />
   </li>
 </template>
 
 <script lang="ts">
-import {
-  defineComponent, PropType, computed,
-} from 'vue';
+import { defineComponent, PropType, computed } from 'vue';
 
-import { CryptocurrencyData } from '@/store/modules/cryptocurrencies/types';
+import Price from '@/components/price/Price.vue';
+import Percentage from '@/components/percentage/Percentage.vue';
+
+import { CryptocurrencyData } from '@/store/modules/cryptocurrencies/types/types';
 
 export default defineComponent({
+  components: {
+    Price,
+    Percentage,
+  },
   props: {
     cryptocurrencyData: {
       type: Object as PropType<CryptocurrencyData>,
@@ -38,21 +48,24 @@ export default defineComponent({
     },
   },
   setup(props) {
-    const usdMarketData = computed(() => props.cryptocurrencyData.usdMarketData);
-    const btcMarketData = computed(() => props.cryptocurrencyData.btcMarketData);
+    const marketData = computed(() => {
+      if (props.cryptocurrencyData.usdtData) {
+        return props.cryptocurrencyData.usdtData;
+      }
 
-    const usdPrice = computed(() => usdMarketData.value.price.toFixed(2));
-    const usdPercentChange = computed(() => usdMarketData.value.priceChangePercentage24h);
+      return props.cryptocurrencyData.btcData;
+    });
 
-    const btcPrice = computed(() => btcMarketData.value.price.toFixed(8));
-    const btcPercentChange = computed(() => btcMarketData.value.priceChangePercentage24h);
+    const price = computed(() => marketData.value.price);
+    const change = computed(() => marketData.value.priceChange);
+    const percentChange = computed(() => marketData.value.priceChangePercent);
+    const quote = computed(() => marketData.value.symbolQuote);
 
     return {
-      usdPrice,
-      usdPercentChange,
-
-      btcPrice,
-      btcPercentChange,
+      price,
+      change,
+      percentChange,
+      quote,
     };
   },
 });
@@ -74,8 +87,6 @@ export default defineComponent({
   grid-column: 1 / 3;
   justify-self: end;
   margin-right: .5rem;
-
-  border-radius: 50%;
 }
 
 .cryptocurrency__symbol {
@@ -84,19 +95,15 @@ export default defineComponent({
   margin-left: .5rem;
 }
 
-.cryptocurrency__usd-price {
-  grid-column: 8 / 11;
+.cryptocurrency__price {
+  grid-column: 10 / 14;
 }
 
-.cryptocurrency__btc-price {
-  grid-column: 12 / 16;
+.cryptocurrency__change {
+  grid-column: 15 / 19;
 }
 
-.cryptocurrency__usd-percent-change {
-  grid-column: 18 / 20;
-}
-
-.cryptocurrency__btc-percent-change {
-  grid-column: 21 / 23;
+.cryptocurrency__percent-change {
+  grid-column: 20 / 24;
 }
 </style>

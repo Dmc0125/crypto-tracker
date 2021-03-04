@@ -6,20 +6,20 @@ import { RootState } from '@/store/types';
 import { ActionTypes } from './action-types';
 import { GetterTypes } from './getter-types';
 import { MutationTypes } from './mutation-types';
-import { Position, PositionEntryData, PositionCloseData } from './types';
-
-export type Positions = {
-  [key: string]: Position;
-}
+import {
+  Positions, Position, PositionEntryData, PositionCloseData,
+} from './types';
 
 export type State = {
   positions: Positions;
+  sellPositionId: string;
 }
 
 // GETTERS
 
 export type Getters = {
   [GetterTypes.GetPortfolioPositions]: (state: State) => Positions;
+  [GetterTypes.GetSellPositionId]: (state: State) => string;
 }
 
 // ACTIONS
@@ -44,6 +44,8 @@ export type Actions = {
 export type Mutations = {
   [MutationTypes.ADD_POSITION]: (state: State, positionData: Position) => void;
   [MutationTypes.SET_POSITIONS]: (state: State, positions: Positions) => void;
+
+  [MutationTypes.SET_SELL_POSITION_ID]: (state: State, positionId: string) => void;
 }
 
 export type PortfolioStore<S = State> = Omit<
@@ -66,8 +68,3 @@ export type PortfolioStore<S = State> = Omit<
     options?: CommitOptions,
   ): ReturnType<Mutations[K]>;
 }
-
-export {
-  Position,
-  PositionEntryData,
-};
