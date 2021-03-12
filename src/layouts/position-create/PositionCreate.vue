@@ -15,14 +15,8 @@
 
       <position-input-group
         type="Entry"
-        @entries-input="updateEntries"
-      />
-
-      <position-input
-        label="Date"
-        input-type="date"
-        :input-value="_date"
-        @date-input="updateDate"
+        :inputs-value="entries"
+        :update="updateEntries"
       />
 
       <position-sidebar-submit text="Add" />
@@ -39,12 +33,10 @@ import PositionInputGroup from '@/components/position-input-group/PositionInputG
 import PositionSidebarSubmit from '@/components/position-sidebar-submit/PositionSidebarSubmit.vue';
 
 import { useStore } from '@/store';
-import { PositionEntryData } from '@/store/modules/portfolio/types/types';
 import { ActionTypes } from '@/store/modules/portfolio/types/action-types';
 
-import getMarketPair from '../get-market-pair';
-import getDate from '../get-date';
-import getInputsData, { getTotal } from '../get-inputs-data';
+import getMarketPair from '@/utils/get-market-pair';
+import getInputsData from '@/utils/get-inputs-data';
 
 export default defineComponent({
   components: {
@@ -59,9 +51,8 @@ export default defineComponent({
     const {
       marketPair, symbols, isValid: isMarketPairValid, errorMessage: marketPairErrorMessage, updateMarketPair,
     } = getMarketPair();
-    const { date: _date, updateDate } = getDate();
 
-    const { values: entries, updateValues: updateEntries } = getInputsData();
+    const { values: entries, update: updateEntries, getValues } = getInputsData();
 
     const addPosition = () => {
       isMarketPairValid();
@@ -71,18 +62,16 @@ export default defineComponent({
       }
 
       const [symbol, quoteSymbol] = symbols.value;
-      const { amount, averagePrice } = getTotal(entries.value);
 
-      const newPosition: PositionEntryData = {
+      dispatch(ActionTypes.AddPosition, {
         quoteSymbol,
-        amount,
         symbol,
+        entries: getValues(),
         marketPair: marketPair.value,
-        price: averagePrice,
-        date: new Date(_date.value),
-      };
+      });
 
-      dispatch(ActionTypes.AddPosition, newPosition);
+      updateEntries.clearInputsData();
+      marketPair.value = '';
     };
 
     return {
@@ -92,9 +81,6 @@ export default defineComponent({
       marketPair,
       updateMarketPair,
       marketPairErrorMessage,
-
-      _date,
-      updateDate,
 
       addPosition,
     };

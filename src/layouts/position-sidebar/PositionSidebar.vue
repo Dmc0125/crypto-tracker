@@ -1,20 +1,41 @@
 <template>
-  <transition name="slide-in">
-    <position-sell />
+  <transition
+    name="slide-in"
+    mode="out-in"
+  >
+    <sidebar
+      v-if="positionData.id.length"
+      :key="`${positionData.type}-${positionData.id}`"
+    >
+      <position-sidebar-form
+        :id="positionData.id"
+        :type="positionData.type"
+      />
+    </sidebar>
   </transition>
 </template>
 
 <script lang="ts">
-import { defineComponent } from 'vue';
+import { computed, defineComponent } from 'vue';
 
-import PositionSell from '@/layouts/position-sidebar/position-sell/PositionSell.vue';
+import Sidebar from '@/components/sidebar/Sidebar.vue';
+import PositionSidebarForm from '@/components/position-sidebar-form/PositionSidebarForm.vue';
+
+import { useStore } from '@/store';
 
 export default defineComponent({
   components: {
-    PositionSell,
+    Sidebar,
+    PositionSidebarForm,
   },
   setup() {
-    return {};
+    const { getters } = useStore();
+
+    const positionData = computed(() => getters.getSidebarPosition);
+
+    return {
+      positionData,
+    };
   },
 });
 </script>

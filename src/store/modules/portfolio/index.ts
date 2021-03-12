@@ -12,21 +12,26 @@ import {
 } from '@/store/modules/portfolio/types';
 import { Positions } from '@/store/modules/portfolio/types/types';
 
-import { addPositionToLocalStorage, getFromLocalStorage, setInLocalStorage } from '@/utils/local-storage';
+import { setPositionInLocalStorage, getFromLocalStorage, setInLocalStorage } from '@/utils/local-storage';
 import { LS_POSITIONS_DATA } from '@/constants';
 
-import { createPositionData, updatePositionData } from './helpers';
+import createPositionData from './utils/create-position-data';
+import updatePositionData from './utils/update-position-data';
+import { getTotal, setCurrentData } from './utils/helpers';
 
 const state: State = {
   positions: {},
 
-  sellPositionId: '',
+  sidebarPosition: {
+    id: '',
+    type: null,
+  },
 };
 
 const getters: GetterTree<State, RootState> & Getters = {
   [GetterTypes.GetPortfolioPositions]: _state => _state.positions,
 
-  [GetterTypes.GetSellPositionId]: _state => _state.sellPositionId,
+  [GetterTypes.GetSidebarPosition]: _state => _state.sidebarPosition,
 };
 
 const actions: ActionTree<State, RootState> & Actions = {
@@ -35,101 +40,44 @@ const actions: ActionTree<State, RootState> & Actions = {
 
     const positionData = createPositionData(cryptocurrencies, newPosition);
 
-    if (!positionData) {
-      return;
-    }
-
-    commit(MutationTypes.ADD_POSITION, positionData);
-    addPositionToLocalStorage(positionData);
+    commit(MutationTypes.SET_POSITION, positionData);
   },
 
-  [ActionTypes.SellPosition]: ({ commit, dispatch, state: _state }, positionCloseData) => {
-    const { id, price: closePrice, amount: closeAmount } = positionCloseData;
+  [ActionTypes.SellPosition]: ({ commit, state: { positions } }, { id, asData }) => {
+    const currentPosition = positions[id];
 
-    const position = _state.positions[id];
+    // If first sell, create close object first
+    if (!currentPosition.close) {
+      const { averagePrice, amount, size } = getTotal(asData);
 
-    const entrySize = position.entry.price * closeAmount;
-    const closeSize = closePrice * closeAmount;
-
-    const pnl = closeSize - entrySize;
-    const pnlPercentage = (closeSize / entrySize - 1) * 100;
-
-    if (!position.close) {
-      position.close = {
-        averagePrice: closePrice,
-        totalSize: closeSize,
-        totalAmount: closeAmount,
-        totalPnl: pnl,
-        totalPnlPercentage: pnlPercentage,
-        values: [{
-          ...positionCloseData,
-          pnl,
-          pnlPercentage,
-          size: closeSize,
-        }],
+      currentPosition.close = {
+        averagePrice,
+        totalAmount: amount,
+        totalSize: size,
+        values: asData,
       };
 
-      position.current = {
-        ...position.current,
-        amount: position.entry.amount - closeAmount,
-        pnl: position.current.pnl - pnl,
-      };
-
-      commit(MutationTypes.ADD_POSITION, position);
-      dispatch(ActionTypes.UpdatePositions);
-      addPositionToLocalStorage(position);
+      const updatedPositionData = updatePositionData(currentPosition, 'sell');
+      commit(MutationTypes.SET_POSITION, updatedPositionData);
       return;
     }
 
-    position.close.values.push({
-      ...positionCloseData,
-      pnl,
-      pnlPercentage,
-      size: closeSize,
-    });
+    // On sell
+    //  - push closeData to close.values
+    //    - call updatePositionData()
+    currentPosition.close.values = [...currentPosition.close.values, ...asData];
 
-    type TotalValues = {
-      totalPrice: number;
-      totalSize: number;
-      totalAmount: number;
-      totalPnl: number;
-    }
+    const updatedPositionData = updatePositionData(currentPosition, 'sell');
+    commit(MutationTypes.SET_POSITION, updatedPositionData);
+  },
 
-    const {
-      totalPnl, totalAmount, totalPrice, totalSize,
-    } = position.close.values.reduce((acc, {
-      price, size, amount, pnl: _pnl,
-    }) => ({
-      totalPrice: (acc.totalPrice || 0) + price,
-      totalSize: (acc.totalSize || 0) + size,
-      totalAmount: Number(((acc.totalAmount || 0) + amount).toFixed(8)),
-      totalPnl: (acc.totalPnl || 0) + _pnl,
-    }), {} as TotalValues);
+  [ActionTypes.AddToPosition]: ({ commit, state: { positions } }, { id, asData }) => {
+    const currentPosition = positions[id];
 
-    const totalClosedAmountEntrySize = position.entry.price * totalAmount;
+    currentPosition.entry.values = [...currentPosition.entry.values, ...asData];
 
-    position.close = {
-      totalAmount,
-      totalSize,
-      totalPnl,
-      averagePrice: totalPrice / position.close.values.length,
-      values: position.close.values,
-      totalPnlPercentage: (totalSize / totalClosedAmountEntrySize - 1) * 100,
-    };
-
-    console.log({
-      totalAmount, totalPnl, totalPrice, totalSize,
-    });
-
-    position.current = {
-      ...position.current,
-      amount: position.entry.amount - position.close.totalAmount,
-      pnl: position.current.pnl - pnl,
-    };
-
-    commit(MutationTypes.ADD_POSITION, position);
-    dispatch(ActionTypes.UpdatePositions);
-    addPositionToLocalStorage(position);
+    const updatedPositionData = updatePositionData(currentPosition, 'add');
+    commit(MutationTypes.SET_POSITION, updatedPositionData);
   },
 
   [ActionTypes.GetPositions]: ({ commit }) => {
@@ -145,34 +93,40 @@ const actions: ActionTree<State, RootState> & Actions = {
       return;
     }
 
-    const updatedPositions = Object.values(_state.positions).reduce<Positions>((acc, position) => {
-      const cryptocurrency = rootState.cryptocurrenciesState.cryptocurrencies[position.symbol];
+    const updatedPositions = Object.values(_state.positions).reduce<Positions>((positions, position) => {
+      const { usdtData, btcData } = rootState.cryptocurrenciesState.cryptocurrencies[position.symbol];
 
-      if (!cryptocurrency) {
-        acc[position.id] = position;
-        return acc;
+      let { price } = btcData;
+
+      if (position.quoteSymbol === 'USDT' && usdtData) {
+        price = usdtData.price;
       }
 
-      const updatedPosition = updatePositionData(cryptocurrency, position);
-      acc[updatedPosition.id] = updatedPosition;
-      return acc;
+      const updatedPosition = setCurrentData(price, position.current.amount, position.current.size, position.entry.averagePrice);
+
+      positions[position.id] = {
+        ...position,
+        current: updatedPosition,
+      };
+      return positions;
     }, {});
 
     commit(MutationTypes.SET_POSITIONS, updatedPositions);
-    setInLocalStorage(LS_POSITIONS_DATA, updatedPositions);
   },
 };
 
 const mutations: MutationTree<State> & Mutations = {
-  [MutationTypes.ADD_POSITION]: (_state, positionData) => {
+  [MutationTypes.SET_POSITION]: (_state, positionData) => {
     _state.positions[positionData.id] = positionData;
+    setPositionInLocalStorage(positionData);
   },
   [MutationTypes.SET_POSITIONS]: (_state, positions) => {
     _state.positions = positions;
+    setInLocalStorage(LS_POSITIONS_DATA, positions);
   },
 
-  [MutationTypes.SET_SELL_POSITION_ID]: (_state, positionId) => {
-    _state.sellPositionId = positionId;
+  [MutationTypes.SET_SIDEBAR_POSITION_DATA]: (_state, sidebarPosition) => {
+    _state.sidebarPosition = sidebarPosition;
   },
 };
 

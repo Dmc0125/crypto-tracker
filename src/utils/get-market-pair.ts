@@ -5,14 +5,24 @@ const getMarketPair = () => {
   const marketPair = ref('');
 
   const updateMarketPair = (newMarketPair: string) => {
-    marketPair.value = newMarketPair.toUpperCase();
+    marketPair.value = newMarketPair;
   };
 
-  const getSymbols = () => marketPair.value.split('/').map(symbol => symbol);
+  const getSymbols = () => marketPair.value.split('/').map(symbol => symbol.toUpperCase());
 
   const symbols = ref(['', '']) as Ref<[string, QuoteSymbol]>;
   const errorMessage = ref('');
 
+  /*
+  Fix: Throw Error if there is wrong input
+
+  errorMessage = {
+    type: 'market-pair',
+    message: '...',
+  };
+
+  JSON.stringify(errorMessage);
+  */
   const isValid = () => {
     const [symbol, quoteSymbol] = getSymbols();
 

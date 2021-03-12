@@ -3,7 +3,7 @@
     <button
       class="positions-header__close-btn"
       type="button"
-      @click="emitClose"
+      @click="hideSidebar"
     >
       <svg width="100%" height="100%" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
         <!-- eslint-disable-next-line max-len -->
@@ -18,6 +18,9 @@
 <script lang="ts">
 import { defineComponent } from 'vue';
 
+import { useStore } from '@/store';
+import { MutationTypes } from '@/store/modules/portfolio/types/mutation-types';
+
 export default defineComponent({
   props: {
     heading: {
@@ -25,13 +28,15 @@ export default defineComponent({
       required: true,
     },
   },
-  setup(_, { emit }) {
-    const emitClose = () => {
-      emit('close');
+  setup() {
+    const { commit } = useStore();
+
+    const hideSidebar = () => {
+      commit(MutationTypes.SET_SIDEBAR_POSITION_DATA, { type: null, id: '' });
     };
 
     return {
-      emitClose,
+      hideSidebar,
     };
   },
 });

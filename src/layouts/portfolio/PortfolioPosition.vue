@@ -3,10 +3,13 @@
     class="position"
   >
     <div class="position__overlay">
-      <button class="overlay__btn">Add more</button>
       <button
         class="overlay__btn"
-        @click.stop="showSellPositionSidebar(positionData.id)"
+        @click.stop="showSidebar('Add')"
+      >Add more</button>
+      <button
+        class="overlay__btn"
+        @click.stop="showSidebar('Sell')"
       >Sell</button>
       <button class="overlay__btn">Details</button>
     </div>
@@ -20,13 +23,13 @@
 
     <price
       class="position__entry-price"
-      :price="positionData.entry.price"
+      :price="positionData.entry.averagePrice"
       :quote="positionData.quoteSymbol"
     />
-    <p class="position__amount">{{ positionData.current.amount }}</p>
+    <p class="position__amount">{{ Number(positionData.current.amount.toFixed(6)) }}</p>
     <price
       class="position__entry-size"
-      :price="positionData.entry.size"
+      :price="positionData.current.entrySize"
       :quote="positionData.quoteSymbol"
     />
 
@@ -55,9 +58,9 @@ import Price from '@/components/price/Price.vue';
 import Percentage from '@/components/percentage/Percentage.vue';
 
 import { useStore } from '@/store';
-import { showSellPositionSidebar } from '@/layouts/position-sidebar/position-sell/helpers';
 
 import { Position } from '@/store/modules/portfolio/types/types';
+import { MutationTypes } from '@/store/modules/portfolio/types/mutation-types';
 
 export default defineComponent({
   components: {
@@ -73,16 +76,12 @@ export default defineComponent({
   setup(props) {
     const { commit } = useStore();
 
-    const openAddToPosition = () => {
-      //
-    };
-
-    const openPositionDetails = () => {
-      //
+    const showSidebar = (type: 'Add' | 'Sell') => {
+      commit(MutationTypes.SET_SIDEBAR_POSITION_DATA, { id: props.positionData.id, type });
     };
 
     return {
-      showSellPositionSidebar,
+      showSidebar,
     };
   },
 });
@@ -137,14 +136,13 @@ export default defineComponent({
   width: 7rem;
   border-radius: 5px;
 
-  border: 2px solid var(--accent);
-  background: var(--secondary);
-  color: var(--accent);
+  background: var(--accent);
+  color: var(--font-secondary);
+  font-weight: 500;
 
   &:hover,
   &:focus {
-    background: var(--accent);
-    color: var(--font-secondary);
+    opacity: .8;
     outline: none;
   }
 }

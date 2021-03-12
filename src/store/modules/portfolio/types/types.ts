@@ -1,48 +1,61 @@
+export type SidebarPosition = {
+  id: string;
+  type: 'Sell' | 'Add' | 'Details' | null;
+}
+
 export type QuoteSymbol = 'USDT' | 'BTC';
 
-type PositionMarketData = {
+export type newPositionData = {
+  marketPair: string;
+  symbol: string;
+  quoteSymbol: QuoteSymbol;
+  entries: PositionMarketData[];
+}
+
+/**
+ * Add/Sell position data
+*/
+export type PositionASData = {
+  id: string;
+  asData: PositionMarketData[];
+}
+
+/**
+ * Entry and close values
+ */
+// type ECDataValues = PositionMarketData & {
+//   pnl: number;
+//   pnlPercentage: number;
+// }
+
+export type PositionMarketData = {
   price: number;
   size: number;
   amount: number;
   date: Date;
 }
 
-export type PositionCloseData = {
-  id: string;
-  price: number;
-  amount: number;
-  date: Date;
+/**
+ * Entry and close properties
+ */
+export type ECData = {
+  averagePrice: number;
+  totalSize: number;
+  totalAmount: number;
+  values: PositionMarketData[];
 }
 
-export type PositionEntryData = {
-  marketPair: string;
-  symbol: string;
-  quoteSymbol: QuoteSymbol;
-  price: number;
-  amount: number;
-  date: Date;
-}
-
-export type Position = Omit<PositionEntryData, 'price' | 'amount' | 'date'> & {
+export type Position = Omit<newPositionData, 'entries'> & {
   id: string;
   logo: string;
   type: 'open' | 'closed';
-  entry: PositionMarketData;
+  entry: ECData;
   current: Omit<PositionMarketData, 'date'> & {
+    entrySize: number;
     pnl: number;
     pnlPercentage: number;
   };
-  close?: {
-    averagePrice: number;
-    totalSize: number;
-    totalAmount: number;
-    totalPnl: number;
-    totalPnlPercentage: number;
-    values: (PositionMarketData & {
-      pnl: number;
-      pnlPercentage: number;
-    })[];
-  };
+  close?: ECData;
 }
 
 export type Positions = {

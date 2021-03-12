@@ -1,7 +1,7 @@
 <template>
   <main
     class="app"
-    color-mode="light"
+    color-mode="dark"
   >
     <section class="main-section">
       <main-card />
@@ -26,7 +26,7 @@ import { ActionTypes as CryptocurrencyActionTypes } from '@/store/modules/crypto
 import { ActionTypes as PortfolioActionTypes } from '@/store/modules/portfolio/types/action-types';
 
 import MainCard from '@/layouts/main-card/MainCard.vue';
-import PositionCreate from '@/layouts/position-sidebar/position-create/PositionCreate.vue';
+import PositionCreate from '@/layouts/position-create/PositionCreate.vue';
 import PositionSidebar from '@/layouts/position-sidebar/PositionSidebar.vue';
 import Loading from '@/layouts/loading/Loading.vue';
 

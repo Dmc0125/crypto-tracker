@@ -7,19 +7,19 @@ import { ActionTypes } from './action-types';
 import { GetterTypes } from './getter-types';
 import { MutationTypes } from './mutation-types';
 import {
-  Positions, Position, PositionEntryData, PositionCloseData,
+  Positions, Position, newPositionData, PositionASData, SidebarPosition,
 } from './types';
 
 export type State = {
   positions: Positions;
-  sellPositionId: string;
+  sidebarPosition: SidebarPosition;
 }
 
 // GETTERS
 
 export type Getters = {
   [GetterTypes.GetPortfolioPositions]: (state: State) => Positions;
-  [GetterTypes.GetSellPositionId]: (state: State) => string;
+  [GetterTypes.GetSidebarPosition]: (state: State) => SidebarPosition;
 }
 
 // ACTIONS
@@ -33,8 +33,9 @@ type ActionAugments = Omit<ActionContext<State, RootState>, 'commit'> & {
 }
 
 export type Actions = {
-  [ActionTypes.AddPosition]: (context: ActionAugments, positionEntryData: PositionEntryData) => void;
-  [ActionTypes.SellPosition]: (context: ActionAugments, positionCloseData: PositionCloseData) => void;
+  [ActionTypes.AddPosition]: (context: ActionAugments, positionEntryData: newPositionData) => void;
+  [ActionTypes.SellPosition]: (context: ActionAugments, positionCloseData: PositionASData) => void;
+  [ActionTypes.AddToPosition]: (context: ActionAugments, positionAddData: PositionASData) => void;
   [ActionTypes.GetPositions]: (context: ActionAugments) => void;
   [ActionTypes.UpdatePositions]: (context: ActionAugments) => void;
 }
@@ -42,10 +43,10 @@ export type Actions = {
 // MUTATIONS
 
 export type Mutations = {
-  [MutationTypes.ADD_POSITION]: (state: State, positionData: Position) => void;
+  [MutationTypes.SET_POSITION]: (state: State, positionData: Position) => void;
   [MutationTypes.SET_POSITIONS]: (state: State, positions: Positions) => void;
 
-  [MutationTypes.SET_SELL_POSITION_ID]: (state: State, positionId: string) => void;
+  [MutationTypes.SET_SIDEBAR_POSITION_DATA]: (state: State, positionId: SidebarPosition) => void;
 }
 
 export type PortfolioStore<S = State> = Omit<

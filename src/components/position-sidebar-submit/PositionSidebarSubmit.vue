@@ -1,6 +1,7 @@
 <template>
   <button
     class="position-sidebar-submit"
+    :class="text === 'Add' ? 'position-sidebar-submit--add' : 'position-sidebar-submit--sell'"
     type="submit"
   >
     {{ text }}
@@ -39,6 +40,28 @@ export default defineComponent({
     background: var(--accent);
     color: var(--font-secondary);
     transition: var(--trans);
+  }
+
+  &--add {
+    color: var(--green);
+    border-color: var(--green);
+
+    &:focus,
+    &:hover {
+      background: var(--green);
+      color: var(--font-secondary);
+    }
+  }
+
+  &--sell {
+    color: var(--red);
+    border-color: var(--red);
+
+    &:focus,
+    &:hover {
+      background: var(--red);
+      color: var(--font-secondary);
+    }
   }
 }
 </style>

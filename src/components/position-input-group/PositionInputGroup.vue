@@ -1,7 +1,7 @@
 <template>
   <div class="inputs-group">
     <div
-      v-for="({ price, amount }, i) in data"
+      v-for="({ price, amount, date }, i) in inputsValue"
       class="inputs-group__section"
       :key="i"
     >
@@ -12,14 +12,14 @@
           <button
             class="actions__add-section"
             type="button"
-            @click="addInputData"
+            @click="update.addInputData"
           >Add {{ type.toLowerCase() }}</button>
 
           <button
-            v-if="data.length > 1"
+            v-if="inputsValue.length > 1"
             class="actions__delete-setion"
             type="button"
-            @click="removeInputData(i)"
+            @click="update.removeInputData(i)"
           >Delete {{ type.toLowerCase() }}</button>
         </div>
       </header>
@@ -29,14 +29,21 @@
         inputType="number"
         mt-0
         :inputValue="price"
-        @price-input="updatePrice(i, $event)"
+        @price-input="update.price(i, $event)"
       />
 
       <position-input
         label="Amount"
         inputType="number"
         :inputValue="amount"
-        @amount-input="updateAmount(i, $event)"
+        @amount-input="update.amount(i, $event)"
+      />
+
+      <position-input
+        label="Date"
+        input-type="date"
+        :input-value="date"
+        @date-input="update.date(i, $event)"
       />
     </div>
   </div>
@@ -44,10 +51,11 @@
 
 <script lang="ts">
 import {
-  defineComponent, watch, ref, PropType,
+  defineComponent, PropType,
 } from 'vue';
 
 import PositionInput from '@/components/position-input/PositionInput.vue';
+import { UpdateFns } from '@/utils/get-inputs-data';
 
 import { InputsData } from './types';
 
@@ -60,50 +68,14 @@ export default defineComponent({
       type: String as PropType<'Entry' | 'Close'>,
       required: true,
     },
-  },
-  setup(_, { emit }) {
-    const data = ref<InputsData[]>([{
-      price: '',
-      amount: '',
-    }]);
-
-    const updatePrice = (i: number, newPrice: string) => {
-      data.value[i].price = newPrice;
-    };
-
-    const updateAmount = (i: number, newAmount: string) => {
-      data.value[i].amount = newAmount;
-    };
-
-    const addInputData = () => {
-      data.value = [
-        ...data.value,
-        {
-          price: '',
-          amount: '',
-        },
-      ];
-    };
-
-    const removeInputData = (i: number) => {
-      data.value.splice(i, 1);
-    };
-
-    watch(() => data.value, () => {
-      emit('entries-input', data.value);
-    }, {
-      deep: true,
-    });
-
-    return {
-      data,
-
-      updatePrice,
-      updateAmount,
-
-      addInputData,
-      removeInputData,
-    };
+    inputsValue: {
+      type: Array as PropType<InputsData[]>,
+      required: true,
+    },
+    update: {
+      type: Object as PropType<UpdateFns>,
+      required: true,
+    },
   },
 });
 </script>

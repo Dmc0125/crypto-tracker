@@ -15,7 +15,7 @@ export const setInLocalStorage = <K>(key: string, value: K) => {
   localStorage.setItem(key, JSON.stringify(value));
 };
 
-export const addPositionToLocalStorage = (position: Position) => {
+export const setPositionInLocalStorage = (position: Position) => {
   const lsData = localStorage.getItem(LS_POSITIONS_DATA);
 
   if (!lsData) {

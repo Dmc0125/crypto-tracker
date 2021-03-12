@@ -20,6 +20,7 @@
       :step="inputType === 'text' ? 0 : 0.00000001"
       @input="emitInput"
       :readonly="isReadonly"
+      :style="{ 'text-transform': label === 'Market pair' ? 'uppercase' : 'none' }"
     >
     <div
       v-if="errorMessage.length"
